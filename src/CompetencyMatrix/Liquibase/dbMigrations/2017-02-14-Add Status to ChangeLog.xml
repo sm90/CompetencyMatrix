@@ -1,0 +1,17 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+  <changeSet author="a.tsatsuyev" id="14834227723495-37" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <addColumn tableName="ChangeLog">
+      <column name="Status" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+
+  </changeSet>
+
+
+</databaseChangeLog>

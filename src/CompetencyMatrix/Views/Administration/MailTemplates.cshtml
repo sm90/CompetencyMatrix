@@ -1,0 +1,83 @@
+@model IEnumerable<CompetencyMatrix.Models.MailTemplate>
+
+@{
+    Layout = "~/Views/Administration/_AdminLayout.cshtml";
+}
+
+<table class="table table-condensed table-striped table-hover">
+    <thead class="row" style="background-color: darkgray">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Subject)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Body)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Subject)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Body)
+                </td>
+                <td>
+                    @{
+                        int type = (int)item.Type;
+                    }
+
+                    <button type="button" class="btn btn-block" data-toggle="modal" data-target="#editMailTemplateDlg" typeId="@type">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </button>
+                </td>
+
+            </tr>
+                        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="editMailTemplateDlg" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <span class="modal-title">Edit Mail Template</span>
+            </div>
+            <div class="modal-body" id="editMailTemplateDlgArea">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var updateUrl = "@Url.Action("UpdateTemplate", "Administration")"
+
+    $(document).ready(function () {
+
+        activateAdminMenItem("#adminMailTemplatesItem");
+
+        $("#editMailTemplateDlg").on('show.bs.modal', function (evt) {
+
+            $.ajax({
+                url: updateUrl,
+                type: "GET",
+                data: {
+                    type: evt.relatedTarget.attributes['typeId'].value
+                },
+                success: function (result, status) {
+                    if (status != "error") {
+                        $("#editMailTemplateDlgArea").html(result);
+                    }
+                }
+            });
+        });
+    });
+
+</script>

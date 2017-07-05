@@ -1,0 +1,148 @@
+﻿@using CompetencyMatrix.Infrastructure
+@using CompetencyMatrix.ViewModels
+@using CompetencyMatrix.Models
+
+@model EmployeeModel
+@inject IServerVariables variables
+
+<div class="well form-horizontal droppable">
+    @{
+        var buttons = (List<EmployeeButtonType>)ViewData["Buttons"];
+        var allowEdit = buttons.Count > 0 && Model.Status != CompetencyMatrix.Models.EmplyeeProfileStatus.Submitted;
+    }
+    <div class="form-group" style="overflow: auto;">
+        <table id="employeeDetailListSkillTree" class="table table-condensed table-striped table-hover droppable" data-url="@Url.Action("GetEmployeeSkillLevel", "Employees")">
+            <colgroup class="row">
+                <col class="col-lg-1" />
+                <col class="col-lg-3" />
+                <col class="col-lg-6" />
+                <col class="col-lg-2" />
+            </colgroup>
+            <thead class="row" style="background-color: darkgray">
+                <tr><th></th><th class="col-lg-4" style="padding-left: 15px;">Skill Name</th> <th class="col-lg-4" style="padding-left: 15px;">Level</th> <th class="col-lg-4" style="padding-left: 15px;">Last Used</th> </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="text-center" id="lblNoSkills">
+            <p>
+                <span>No Skills added</span><br />Use Drag and Drop to add skills
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    initEmployeesDetailListSkillTree();
+
+    var allowEditEmployee = @allowEdit.ToString().ToLower();
+
+
+    $(".droppable").droppable({
+        drop: function (event, ui) {
+            if (!allowEditEmployee) {
+                return false;
+            }
+            var sourceNode = $(ui.helper).data("ftSourceNode");
+
+            if (sourceNode.folder)
+                return false;
+
+            var allKeys = $.map($('#employeeDetailListSkillTree').fancytree('getRootNode').getChildren(), function (node) {
+                return node;
+            });
+            var alreadyExist = false;
+            var params = [sourceNode.data.model.id];
+            $.each(allKeys, function (event, data, otherNode) {
+                if (data.data.skillId == params[0])
+                    alreadyExist = true;
+            }, params);
+
+            if (alreadyExist)
+                showAlert("Alert", "Skill '" + sourceNode.data.model.name + "' already exist. Please choose another one or edit existing");
+            else
+                employeeSkillEdit(sourceNode.data.model.id, false);
+        }
+    });
+
+    var tree = $("#employeeDetailListSkillTree").fancytree("getTree");
+    var id = $("#employeeDetailListSkillTree").val();
+    var pathforLoadEmployeeSkillsTree = "@Url.Action("GetSkillsRootWithStore", "Employees")";
+
+
+    reloadTree(null);
+
+    function reloadTree(success){
+        tree.reload({
+            url: pathforLoadEmployeeSkillsTree
+        })
+            .done(function () {
+                if (success) {
+                    success();
+                }
+            });
+    }
+
+    function deleteEmployeeSkill() {
+        var s = $("#employeeDetailListSkillTree").fancytree("getTree").getSelectedNodes();
+        if (s.length == 0)
+            return;
+        var confirmMessage = s.length == 1 ? "Do you want to remove a skill?" : "Do you want to remove skills?";
+        showConfirm("Question", confirmMessage, function () {
+            var urlFordeleteSkill = $('#deleteEmployeeSkillId').data('url');
+
+            var str = '';
+            s.forEach(function (node) {
+                str += node.data.employeeSkillId + ':';
+            });
+            str = str.slice(0, -1);
+            $.ajax({
+                url: urlFordeleteSkill,
+                type: "POST",
+                data: { data: str },
+                success: function (result) {
+
+                    reloadTree(function () {
+                        $('#detailsView').empty();
+                    });
+                }
+            });
+        });
+    }
+
+    function saveSkillsToDb(employeeId, status) {
+        var urlForSaveSkills = $('#skillDetailFormSubmitId').data('url');
+
+        $.ajax({
+            url: urlForSaveSkills,
+            type: "POST",
+            data: {
+                employeeId:employeeId,
+                status: status
+            },
+            success: function (result) {
+                if (status == CompetencyMatrix.EmployeeProfileStatus.Submitted) {
+                    openEmployeeDetails(@variables.CurrentEditUserId);
+                }
+            }
+        });
+    }
+
+    function skillDetailFormCancel() {
+        var urlForCancelSkills = $('#skillDetailFormCancelId').data('url');
+
+        $.ajax({
+            url: urlForCancelSkills,
+            type: "POST",
+            success: function (result) {
+                reloadTree();
+            }
+        });
+    }
+</script>

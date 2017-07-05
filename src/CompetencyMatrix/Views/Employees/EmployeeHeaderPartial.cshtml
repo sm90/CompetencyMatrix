@@ -1,0 +1,198 @@
+﻿@using CompetencyMatrix.Infrastructure
+@using CompetencyMatrix.ViewModels
+@model CompetencyMatrix.ViewModels.EmployeeModel
+
+@inject IServerVariables variables
+@{
+    var buttons = (List<EmployeeButtonType>)ViewData["Buttons"];
+    bool isAllowEdit = true;
+    if (ViewData["IsAllowEdit"] != null)
+    {
+        isAllowEdit = (bool)ViewData["IsAllowEdit"];
+    }
+
+}
+<div class="modal fade noprint" id="employeePastProjectModalId" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Employees past project detail</h4>
+            </div>
+            <div class="modal-body" id="modalContent">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="idEmployeeHeader" class="noprint">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <label class="label label-data" style="font-size: 130%!important; background-color: #F5F5F5!important ">@Model.Name</label>
+            <label style="border-right: 1px darkgray solid;"> &nbsp;</label>
+            <label class="label label-data" style="font-size: 130%!important; background-color: #F5F5F5!important">@Model.Title</label>
+
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="media">
+                        <div class="media-left media-middle">
+                            <img src="@Url.Action("GetEmployeePhoto", "Employees", new {id = Model.Id})" class="media-object" style="width:240px" alt="imageEmployees">
+                        </div>
+                        <div class="media-body" style="padding-left: 20px;">
+                            <div class="row">
+                                <div class="col-lg-2" style="border-right: 1px darkgray solid;">
+                                    <div class="control-group" style="padding-top: 10px">
+                                        <div>
+                                            <label class="label label-info">Office</label>
+                                        </div>
+                                        <div>
+                                            <label class="label label-data">@Model.Office &nbsp;</label>
+                                        </div>
+                                    </div>
+                                    <div class="control-group" style="padding-top: 10px">
+                                        <div>
+                                            <label class="label label-info">Manager</label>
+                                        </div>
+                                        <div>
+                                            <label class="label label-highlighted">@Model.ManagerNavigation?.Name &nbsp;</label>
+                                        </div>
+                                    </div>
+                                    <div class="control-group" style="padding-top: 10px">
+                                        <div>
+                                            <label class="label label-info">Profile Status</label>
+                                        </div>
+                                        <div>
+                                            <label class="label label-data">@EmployeeModel.GetProfileStatus(Model, variables.CurrentUserId)</label>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group-sm btn-group-justified" style="padding-top: 20px">
+
+                                        @{
+                                            var approveEmployee = $"approveEmployee({Model.Id})";
+                                            var rejectEmployee = $"rejectEmployee({Model.Id})";
+                                        }
+
+                                        @{
+
+
+                                            Html.RenderPartial("Controls/ButtonPanel", new ButtonPanelModel()
+                                            {
+                                                Css = "pull-left",
+                                                Buttons = new List<ButtonModel>() {
+                                                    new ButtonModel { Name="Approve", Type=ButtonType.Approve, Id="btnApprove", Visible=buttons.Contains(EmployeeButtonType.Approve), OnClick=approveEmployee},
+                                                    new ButtonModel { Name="Reject", Type=ButtonType.Reject, Id="btnReject", Visible=buttons.Contains(EmployeeButtonType.Reject), OnClick=rejectEmployee},
+                                            }
+                                            });
+                                        }
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-2" style="border-right: 1px darkgray solid;">
+                                    <div class="control-group" style="padding-top: 10px">
+                                        <div>
+                                            <label class="label label-info">Email</label>
+                                        </div>
+                                        <div>
+                                            <label class="label label-data">@Model.Email&nbsp;</label>
+                                        </div>
+                                    </div>
+                                    <div class="control-group" style="padding-top: 10px">
+                                        <div>
+                                            <label class="label label-info">Skype</label>
+                                        </div>
+                                        <div>
+                                            <label class="label label-data">@Model.Skype &nbsp;</label>
+                                        </div>
+                                    </div>
+                                    <div class="control-group" style="padding-top: 10px">
+                                        <div>
+                                            <label class="label label-info">Cell</label>
+                                        </div>
+                                        <div>
+                                            <label class="label  label-data">@Model.Cell&nbsp;</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="btn-group-sm btn-group-justified" style="padding-top: 10px">
+                                        <br />
+                                        &nbsp;
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="btn-block align">
+                                                @{
+                                                    if (isAllowEdit)
+                                                    {
+                                                        <button type="button" class='@string.Format("btn btn-default btn-md btn-block {0}", isAllowEdit ? string.Empty : "disabled")' id="btnEditSkills" onclick="skillsEdit()"> Edit Skills</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="button" class='@string.Format("btn btn-default btn-md btn-block {0}", isAllowEdit ? string.Empty : "disabled")' id="btnEditSkills"> Edit Skills</button>
+                                                    }
+                                                }
+                                                <button type="button" class="btn btn-default btn-md btn-block disabled" id="btnEditPastProject" onclick="pastProjectEdit()" data-url='@Url.Action("GetEmployeePastProjectDetailModel", "Employees", new {pastProjectId = 0})'> Edit past projects</button>
+                                                <button type="button" class="btn btn-default btn-md btn-block" data-toggle="modal" onclick="editSertifications()">Edit training and certification</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="btn-block">
+                                                @*<button   data-backdrop="static">*@
+
+
+                                                <button type="button" class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#gapAnalysisDialog" title="View gap analysis"> Gap analysis</button>
+                                                <button type="button" class="btn btn-default btn-md btn-block" onclick='@Url.Action("ExportToExcel", "Employees")'> Import CV Template</button>
+                                                <button type="button" class="btn btn-default btn-md btn-block"> Generate CV</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- View gap analysis modal dialog-->
+<div id="gapAnalysisDialog" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" style="width: 80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Gap Analysis<span id="gapsPrintUserName" style="display:none">@Model.Name</span></h4>
+            </div>
+            <div class="modal-body" id="gapAnalysisDlgArea">
+            </div>
+        </div>
+    </div>
+    <script>
+
+        $("#gapAnalysisDialog").on('show.bs.modal', function () {
+
+            var url = "@Url.Action("GetGapAnalysis", "Employees")";
+
+            var data = {
+                employeeId: @Model.Id,
+            };
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: data,
+                success: function (result, status) {
+                    if (status != "error") {
+                        $("#gapAnalysisDlgArea").html(result);
+                    }
+                }
+            });
+
+        });
+
+    </script>
+</div>

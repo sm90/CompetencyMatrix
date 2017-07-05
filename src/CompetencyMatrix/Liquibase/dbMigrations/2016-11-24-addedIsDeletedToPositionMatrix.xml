@@ -1,0 +1,12 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+<changeSet author="v.grebinnyk" id="250">
+    <addColumn tableName="PositionMatrix" schemaName="dbo">
+      <column name="IsDeleted" type="Boolean" defaultValueBoolean="false">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+</changeSet>
+</databaseChangeLog>

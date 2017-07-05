@@ -1,0 +1,13 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+
+    <changeSet author="a.tsatsuyev (generated)" id="1484115347413-62" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="ParentGroupId" baseTableName="PositionMatrixSkillGroup" constraintName="FK_PositionMatrixSkillGroups_PositionMatrixSkillGroupsParentGroup" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="Id" referencedTableName="PositionMatrixSkillGroup"/>
+	<addForeignKeyConstraint baseColumnNames="OverridenGroupId" baseTableName="PositionMatrixSkillGroup" constraintName="FK_PositionMatrixSkillGroups_PositionMatrixSkillOverridenGroup" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="Id" referencedTableName="PositionMatrixSkillGroup"/>
+    </changeSet>
+
+
+</databaseChangeLog>

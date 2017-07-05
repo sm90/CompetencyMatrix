@@ -1,0 +1,236 @@
+﻿@using System.Threading.Tasks
+@using CompetencyMatrix.Infrastructure
+@using CompetencyMatrix.Models
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@using WebApplicationCore.Models.AccountViewModels
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IServerVariables Variables
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <environment names="Development,Staging,Production">
+
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+        <script src="~/lib/moment/min/moment.min.js"></script>
+        <script src="~/lib/moment/locale/en-gb.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/lib/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/jquery.fancytree/dist/jquery.fancytree-all.js" type="text/javascript"></script>
+        <script src="~/lib/jquery.fancytree/dist/src/jquery.fancytree.dnd.js"></script>
+        <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+        <script src="~/lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js"></script>
+        <script src="~/lib/jquery-serialize-object/jquery.serialize-object.js"></script>
+        
+
+        <script src="~/js/site.js" asp-append-version="true"></script>
+
+        <script src="~/js/SkillEvaluationModel.js" asp-append-version="true"></script>
+        <script src="~/js/SkillEvaluationModels.js" asp-append-version="true"></script>
+        <script src="~/js/TrainingSertification.js" asp-append-version="true"></script>
+        <script src="~/js/Home/Skills.js" asp-append-version="true"></script>
+        <script src="~/js/Shared/EditorTemplates/SkillEditor.js" asp-append-version="true"></script>
+        <script src="~/js/Employees/addEmployee.js" asp-append-version="true"></script>
+
+
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/loading.css" />
+        <link href="~/lib/jquery.fancytree/dist/skin-bootstrap/ui.fancytree.css" rel="stylesheet" type="text/css"
+              class="skinswitcher">
+        <link href="~/lib/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
+        <link href="~/css/buttons.css" rel="stylesheet" />
+    </environment>
+    @RenderSection("Header", false)
+    @*<environment names="Staging,Production">
+            <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
+                  asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+                  asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+            <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+
+            <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                    asp-fallback-test="window.jQuery">
+
+            </script>
+            <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
+                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+
+            </script>
+            <script src="~/js/site.min.js" asp-append-version="true"></script>
+        </environment>*@
+
+</head>
+@{
+    string controller = (string)ViewContext.RouteData.Values["controller"];
+}
+
+
+<body>
+@if (string.CompareOrdinal(controller, "Account") != 0)
+{
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Competency Matrix v.0.35</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li id="navBarEmployees"><a asp-controller="Home" asp-action="Employees">Employees</a></li>
+                    <li id="navBarPositionMatrices"><a asp-controller="Home" asp-action="PositionMatrices">Matrixes</a></li>
+                    <li id="navBarSkills"><a asp-controller="Home" asp-action="Skills">Skills</a></li>
+                    @if (Context.User.IsInRole("Admin"))
+                    {
+                        <li id="navBarAdministartion"><a asp-controller="Administration" asp-action="Index">Administration</a></li>
+                    }                    	        
+                </ul>
+
+                @if (Variables.CurrentUserId > 0 && Context.User.Identity.IsAuthenticated)
+                {
+                    <form asp-area="" asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm" class="navbar-right" style="margin-right: 100px;">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a class="text-warning">@Context.User.Identity.Name</a>
+                            </li>
+                            <li>
+                                <button class="btn btn-link navbar-btn navbar-link" onclick="return onCreateTicket()">Create Ticket</button>
+                            </li>
+                            <li>
+                                <button type="submit" class="btn btn-link navbar-btn navbar-link">Log off</button>
+                            </li>
+                        </ul>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Competency Matrix v.0.35</a>
+            </div>            
+        </div>
+    </div>
+}
+    @if (string.CompareOrdinal(controller, "Account") != 0)
+    {
+        <div class="container-fluid body-content">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert" id="errorAlertTemplate" style="display: none">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <label>Server request error: </label><br />
+                <label>Url:</label><span id="ajaxErrorAlertUrl"></span><br />
+                <label>Status:</label><span id="ajaxErrorAlertStatusText"></span>
+            </div>
+
+            <div id="ajaxErrorAlert" style="display: none"></div>
+
+            <div id="LOADING" class="loading" style="display: none"></div>
+
+            @RenderBody()
+        </div>
+    }
+    else
+    {
+        <div class="container body-content" style="padding-top: 8px">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert" id="errorAlertTemplate" style="display: none">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <label>Server request error: </label><br />
+                <label>Url:</label><span id="ajaxErrorAlertUrl"></span><br />
+                <label>Status:</label><span id="ajaxErrorAlertStatusText"></span>
+            </div>
+
+            <div id="ajaxErrorAlert" style="display: none"></div>
+
+            <div id="LOADING" class="loading" style="display: none"></div>
+
+            @RenderBody()
+        </div>
+    }
+    
+    @RenderSection("scripts", required: false)
+
+    <div id="alertModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" >&times;</button>
+                    <h4 class="modal-title">Alert</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Some text in the modal.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="btnOk">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="alertConfirm" class="modal fade" role="dialog" tabindex="-1">
+        <div class="modal-dialog alert alert-warning">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Alert</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Some text in the modal.</p>
+                </div>
+                
+                <div class="modal-footer">
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span><span> No</span>
+                        </button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="yesButtonId">
+                            <span class="glyphicon glyphicon-ok fa-fw"></span><span> Yes</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="loginDialog" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="modalTitle">Login</h4>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    @await Html.PartialAsync("~/Views/Account/LoginPopup.cshtml", new LoginViewModel())
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @*  This footer referenced from pages through function getLayoutFooter()  *@
+    <div id="layoutFooter" class="navbar-fixed-bottom" ></div>
+</body>
+</html>

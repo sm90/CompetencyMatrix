@@ -1,0 +1,217 @@
+﻿@model CompetencyMatrix.ViewModels.EmployeePastProjectDetailModel
+
+<form asp-controller="Employees" asp-action="SavePastProjectDetails" method="post" role="form" id="pastProjectDetailFormId"
+      data-ajax="true" data-ajax-method="POST"
+      data-ajax-success="pastProjectEditSuccessfullyComplete" onsubmit="pastProjectEmploeeSubmit(e)">
+
+    @**@
+    <div class="panel form-horizontal well" id="employeeDetail">
+        @Html.HiddenFor(a => a.Id)
+        @Html.HiddenFor(a => a.WorkPeriodStart)
+        @Html.HiddenFor(a => a.WorkPeriodStartIso)
+        @Html.HiddenFor(a => a.WorkPeriodEnd)
+        @Html.HiddenFor(a => a.WorkPeriodEndIso)
+        <div class="form-group">
+            <label asp-for="@Model.Company" class="col-sm-4 control-label"></label>
+            <div class="col-sm-8">
+                <div id="dataCompanyId">
+                    <input asp-for="@Model.Company" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.WorkPeriodStart" class="col-sm-4 control-label"></label>
+            <div class="col-sm-8">
+                <div class='input-group date datetimepicker' id='datetimepickerWorkPeriodStart' data-type="datetime">
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+                <script type="text/javascript">
+                    $(function () {
+                        $('#datetimepickerWorkPeriodStart').datetimepicker({ format: 'DD/MM/YYYY', date: new Date('@Model.WorkPeriodStartIso') });
+                    });
+                </script>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.WorkPeriodEnd" class="col-sm-4 control-label"></label>
+            <div class="col-sm-8">
+                <div class='input-group date datetimepicker' id='datetimepickerWorkPeriodEnd' data-type="datetime">
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+                <script type="text/javascript">
+                    $(function () {
+                        $('#datetimepickerWorkPeriodEnd').datetimepicker({ format: 'DD/MM/YYYY', date: new Date('@Model.WorkPeriodEndIso') });
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="@Model.Project" class="col-sm-4 control-label"></label>
+            <div class="col-sm-8">
+                <div id="dataProjectId">
+                    <input asp-for="@Model.Project" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.ProjectDescription" class="col-sm-4 control-label"></label>
+            <div class="col-sm-8">
+                <textarea asp-for="@Model.ProjectDescription" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.Role" class="col-sm-4 control-label"></label>
+            <div class="col-sm-8">
+                <input asp-for="@Model.Role" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="@Model.Technologies" class="col-sm-4 control-label"></label>
+            <div class="col-sm-8">
+                <textarea asp-for="@Model.Technologies" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="@Model.Tools" class="col-sm-4 control-label"></label>
+            <div class="col-sm-8">
+                <textarea asp-for="@Model.Tools" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.Team" class="col-sm-4 control-label"></label>
+            <div class="col-sm-8">
+                <textarea asp-for="@Model.Team" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="btn-toolbar modal-footer well" role="toolbar" style="border-top:none;">
+        <div class="btn-group pull-right" role="group" aria-label="...">
+            <button type="submit" class="btn btn-default pull-right" title="Save changes" id="pastProjectDetailFormSubmitId">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+                Save
+            </button>
+            <button class="btn btn-default pull-right" title="Cancel changes" data-dismiss="modal">
+                <span class="glyphicon glyphicon-refresh"></span>
+                Cancel
+            </button>
+        </div>
+    </div>
+</form>
+
+
+<script type="text/javascript">
+    $('#pastProjectDetailFormId').on('submit', function (e) {
+        var company = $('#Company');
+        
+        // Check if there is an entered value
+        if (!company.val()) {
+            // Add errors highlight
+            company.closest('.form-group').removeClass('has-success').addClass('has-error');
+
+            // Stop submission of the form
+            e.preventDefault();
+        } else {
+            // Remove the errors highlight
+            company.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+
+        var project = $('#Project');
+
+        // Check if there is an entered value
+        if (!project.val()) {
+            // Add errors highlight
+            project.closest('.form-group').removeClass('has-success').addClass('has-error');
+
+            // Stop submission of the form
+            e.preventDefault();
+        } else {
+            // Remove the errors highlight
+            project.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+
+        var role = $('#Role');
+
+        // Check if there is an entered value
+        if (!role.val()) {
+            // Add errors highlight
+            role.closest('.form-group').removeClass('has-success').addClass('has-error');
+
+            // Stop submission of the form
+            e.preventDefault();
+        } else {
+            // Remove the errors highlight
+            role.closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+
+        //var technologies = $('#Technologies');
+
+        //// Check if there is an entered value
+        //if (!technologies.val()) {
+        //    // Add errors highlight
+        //    technologies.closest('.form-group').removeClass('has-success').addClass('has-error');
+
+        //    // Stop submission of the form
+        //    e.preventDefault();
+        //} else {
+        //    // Remove the errors highlight
+        //    technologies.closest('.form-group').removeClass('has-error').addClass('has-success');
+        //}
+
+        //var tools = $('#Tools');
+
+        //// Check if there is an entered value
+        //if (!tools.val()) {
+        //    // Add errors highlight
+        //    tools.closest('.form-group').removeClass('has-success').addClass('has-error');
+
+        //    // Stop submission of the form
+        //    e.preventDefault();
+        //} else {
+        //    // Remove the errors highlight
+        //    tools.closest('.form-group').removeClass('has-error').addClass('has-success');
+        //}
+
+        //var team = $('#Team');
+
+        //// Check if there is an entered value
+        //if (!team.val()) {
+        //    // Add errors highlight
+        //    team.closest('.form-group').removeClass('has-success').addClass('has-error');
+
+        //    // Stop submission of the form
+        //    e.preventDefault();
+        //} else {
+        //    // Remove the errors highlight
+        //    team.closest('.form-group').removeClass('has-error').addClass('has-success');
+        //}
+        var i = $('#datetimepickerWorkPeriodStart').data("DateTimePicker").date().toDate().toISOString();
+        $('#WorkPeriodStart').val(i);
+
+        if ($('#datetimepickerWorkPeriodEnd').data("DateTimePicker").date() === null) {
+            $('#WorkPeriodEnd').val(null);
+        } else {
+            var i = $('#datetimepickerWorkPeriodEnd').data("DateTimePicker").date().toDate().toISOString();
+            $('#WorkPeriodEnd').val(i);
+        }
+
+        if ($('#datetimepickerWorkPeriodStart').data("DateTimePicker").date() === null)
+        {
+            $('#datetimepickerWorkPeriodStart').closest('.form-group').removeClass('has-success').addClass('has-error');
+            e.preventDefault();
+        }
+
+        //if ($('#datetimepickerWorkPeriodStart').data("DateTimePicker").date().toDate() > $('#datetimepickerWorkPeriodEnd').data("DateTimePicker").date().toDate()) {
+        //    $('#datetimepickerWorkPeriodStart').closest('.form-group').removeClass('has-success').addClass('has-error');
+        //    e.preventDefault();
+        //}
+    });
+</script>

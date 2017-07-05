@@ -1,0 +1,152 @@
+﻿@using System.Security.Claims
+@using System.Threading.Tasks
+
+<style type="text/css">
+    /* Define custom width and alignment of table columns */
+    ul.fancytree-container {
+        position: inherit;
+        height: 300px;
+        width: 100%;
+    }
+
+    #treetable {
+        table-layout: fixed;
+    }
+
+        #treetable tr td:nth-of-type(1) {
+            text-align: center;
+        }
+
+        #treetable tr td:nth-of-type(2) {
+            text-align: left;
+        }
+
+        #treetable tr td:nth-of-type(3) {
+            min-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+</style>
+
+<div class="well" style="overflow: auto;" id="idEmployeeDetailSkillContainer">
+    <div class="btn-toolbar">
+
+    </div>
+
+    <div>
+        <select class="form-control" placeholder="Positions" id="positionsList">
+            <option Value="-1">Show All</option>
+            @foreach (var item in ViewBag.Positions)
+            {
+                <option Value="@item.Id">@item.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="input-group">
+        <input style="margin-bottom: 8px; margin-top: 8px" type="text" class="form-control" placeholder="Search" title="Search skill tree" id="skillTree_txtSearch" />
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" title="Clear search" id="skillTree_clearSearch">
+                <span class="glyphicon glyphicon-remove-circle"></span>
+            </button>
+        </span>
+    </div>
+
+    <table id="employeeDetailSkillTree" class="table table-condensed table-striped table-hover">
+        <colgroup>
+            <col width="0px" />
+            <col width="*" />
+            <col width="30px" style="align-content: center" />
+        </colgroup>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        makescrollEmployeeTreeTree();
+        $(window).resize(function () {
+            makescrollEmployeeTreeTree();
+        }).resize();
+    });
+
+    function makescrollEmployeeTreeTree() {
+        var bottom = getLayoutFooter().position();
+        var top = $('#employeeDetailSkillTree').position();
+        var diff = bottom.top - top.top;
+        var val = diff.toString() + 'px';
+        $('#idEmployeeDetailSkillContainer').css('height', val);
+        $('#idEmployeeDetailSkillContainer').css('max-height', val);
+
+        $('#containerDetailSkillId').css('height', val);
+        $('#containerDetailSkillId').css('max-height', val);
+    }
+
+    initEmployeeDetailSkillTree();
+    $("#employeeDetailSkillTree").bind("fancytreeactivate", function (event, data) {
+
+    });
+
+    function expandAll() {
+        $("#employeeDetailSkillTree")
+            .fancytree("getRootNode")
+            .visit(function(node) {
+                node.setExpanded(true);
+            });
+    }
+
+    function collapseAll() {
+        $("#employeeDetailSkillTree")
+            .fancytree("getRootNode")
+            .visit(function(node) {
+                node.setExpanded(false);
+            });
+    }
+
+    $("#positionsList")
+            .change(
+			function()
+			{
+			    var tree = $("#employeeDetailSkillTree").fancytree("getTree");
+
+			    var matrixId = $(this).val();
+			    if (matrixId == -1) {
+			        tree.clearFilter();
+			        return;
+			    }
+
+			    var url = "/api/Employees/matrixSkills";
+
+			    var data =
+					{
+					    id: matrixId
+					};
+
+			    $.ajax({
+			        url: url,
+			        type: "GET",
+			        data: data,
+			        success: function (result, status)
+			        {
+			            if (status == "success")
+			            {
+			                tree.filterNodes(function (node) {
+			                    return !node.isFolder() && containsSkillById(result, node.data.model.id);
+			                }, { autoExpand: true });
+			            }
+			        }
+			    });
+			});
+
+    function containsSkillById(arr, value) {
+        return arr.filter(function (o) { return o.skillId === value; }).length > 0;
+    }
+
+</script>

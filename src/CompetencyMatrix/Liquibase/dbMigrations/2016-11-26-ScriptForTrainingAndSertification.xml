@@ -1,0 +1,57 @@
+﻿<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+  <changeSet author="a.tsatsuyev" id="273" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <createTable tableName="TrainingSertification">
+      <column autoIncrement="true" name="Id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="EmployeeId" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="Name" type="NVARCHAR(MAX)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="When" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="TypeId" type="INT">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="a.tsatsuyev (generated)" id="301" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <createTable tableName="TrainingSertificationType">
+      <column autoIncrement="true" name="Id" type="INT">
+        <constraints primaryKey="true" primaryKeyName="PK_TrainingSertificationType"/>
+      </column>
+      <column name="Name" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="a.tsatsuyev (generated)" id="311" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <addForeignKeyConstraint baseColumnNames="TypeId" baseTableName="TrainingSertification" constraintName="FK_TrainingSertificationType_TrainingSertification" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Id" referencedTableName="TrainingSertificationType"/>
+  </changeSet>
+
+  <changeSet author="a.tsatsuyev (generated)" id="281" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <addPrimaryKey columnNames="Id" constraintName="PK_TrainingSertification_1" tableName="TrainingSertification"/>
+  </changeSet>
+
+  <changeSet author="a.tsatsuyev (generated)" id="291" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <addForeignKeyConstraint baseColumnNames="EmployeeId" baseTableName="TrainingSertification" constraintName="FK_TrainingSertification_Employee" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Id" referencedTableName="Employee"/>
+  </changeSet>
+
+  <changeSet author="a.tsatsuyev" id="320">
+    <loadData 
+            file="data/TrainingSertificationType.csv"
+            tableName="TrainingSertificationType">
+      <column name="Name" type="STRING"/>
+    </loadData>
+  </changeSet>
+  
+</databaseChangeLog>

@@ -1,0 +1,119 @@
+﻿@using CompetencyMatrix.ViewModels
+@model CompetencyMatrix.ViewModels.PositionMatrixSkillGroup
+
+@{
+    var modelDivId = $"group_leaf";
+    var groupNameId = $"groupName_leaf";
+    var checkBoxId = "groupCheckbox";
+
+    if (Model.SkillViewType != SkillViewType.Skill)
+    {
+        modelDivId = $"group_{Model.Id}";
+        groupNameId = $"groupName_{Model.Id}";
+        checkBoxId = $"groupCheckbox_{Model.Id}";
+    }
+}
+
+<div id="@modelDivId">
+    <div >
+        @*<span class="glyphicon glyphicon-collapse-down"></span>*@
+        @{
+            if (Model.SkillViewType != SkillViewType.Skill)
+            {
+                <label style="padding-right: 4px;">
+                    <input modelId="@Model.Id" id="@checkBoxId" onchange="selectSkillsGroup(@Model.Id)" type="checkbox">
+                </label>
+            }
+        }
+        <label modelId="@Model.Id" for="@checkBoxId" id="@groupNameId">@Model.Name</label>
+    </div>
+
+    <div id="@modelDivId" class="panel panel-default selectable droppable">
+        <div class="panel-body ">
+            <div>
+                <table id="@modelDivId" class="table table-striped selectable positionMatrixSkillGroupTable">
+                    <colgroup>
+                        <col width="10" />
+                        <col width="200" />
+                        <col width="200" />
+                        <col width="150" />
+                        <col width="150" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Skill name
+                            <th>Inherited from</th>
+                            <th>
+                                @{
+                                    if (Model.SkillViewType == SkillViewType.Group)
+                                    {
+                                        <select modelId="@Model.Id" asp-items="@ViewBag.SkillGroupTypes" asp-for="@Model.GroupTypeId" class="form-control" onchange="onSkillGroupChanged(this, SkillType.Category)"></select>
+                                    }
+                                }
+                            </th>
+
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var positionMatrixSkills = Model.Skills.ToList();
+
+                            for (int index = 0; index < positionMatrixSkills.Count; index++)
+                            {
+                                var positionMatrixSkill = positionMatrixSkills[index];
+
+                                if (ViewData["IsJsonResult"] != null)
+                                {
+                                    await Html.RenderPartialAsync("PositionMatrix/EditorTemplates/PositionMatrixSkill", positionMatrixSkill);
+                                }
+                                else
+                                {
+                                    await Html.RenderPartialAsync("EditorTemplates/PositionMatrixSkill", positionMatrixSkill);
+                                }
+                            }
+                        }
+
+
+                        <tr>
+                            <td colspan="5" id="childGroup">
+
+                                @{
+                                    if (Model.ChildGroups.Count > 0)
+                                    {
+                                        for (int i = 0; i < Model.ChildGroups.Count; i++)
+                                        {
+                                            if (ViewData["IsJsonResult"] != null)
+                                            {
+                                                await Html.RenderPartialAsync("PositionMatrix/EditorTemplates/PositionMatrixSkillGroup", Model.ChildGroups[i]);
+                                            }
+                                            else
+                                            {
+                                                await Html.RenderPartialAsync("EditorTemplates/PositionMatrixSkillGroup", Model.ChildGroups[i]);
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@*@{
+    if (Model.SkillViewType != SkillViewType.Skill)
+    {
+        //<div class="droppable" style="width: 100%; height:30px;" id="parentGroup"></div>
+    }
+}*@
+
+
+
+
+
+

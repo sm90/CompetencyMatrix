@@ -1,0 +1,72 @@
+﻿@model CompetencyMatrix.ViewModels.PositionMatrixSkillGroup
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="pull-left">
+            <label>@Model.Name</label>
+        </div>
+
+        <div class="pull-right badge">@Model.GroupType?.Name</div>
+
+        <table class="table table-striped positionMatrixSkillGroupTable">
+            <colgroup>
+                <col width="200" />
+                <col width="200" />
+                <col width="150" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Skill name</th>
+                    <th>Inherited from</th>
+                    <th>Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var positionMatrixSkills = Model.Skills.ToList();
+
+                    for (int index = 0; index < positionMatrixSkills.Count; index++)
+                    {
+                        var positionMatrixSkill = positionMatrixSkills[index];
+                        @if (!positionMatrixSkill.Hidden)
+                        {
+
+                            <tr>
+                                <td>@positionMatrixSkill.SkillName</td>
+                                <td>@positionMatrixSkill.MatrixName</td>
+                                @{
+                                    var skillLevel = string.Empty;
+                                    if (Model.SkillViewType == CompetencyMatrix.ViewModels.SkillViewType.Skill)
+                                    {
+                                        var list = (List<SelectListItem>)@ViewBag.SkillLevels[positionMatrixSkill.EvaluationModelId.Value];
+                                        skillLevel = list.FirstOrDefault(x => x.Value == positionMatrixSkill.SkillLevelId.ToString())?.Text;
+                                    }
+                                    else
+                                    {
+                                        skillLevel = positionMatrixSkill.SkillLevelName;
+                                    }
+                                }
+                                <td>@skillLevel</td>
+                            </tr>
+                        }
+                    }
+                }
+
+                <tr>
+                    <td colspan="3" id="childGroup">
+
+                        @{
+                            if (Model.ChildGroups.Count > 0)
+                            {
+                                for (int i = 0; i < Model.ChildGroups.Count; i++)
+                                {
+                                    await Html.RenderPartialAsync("DisplayTemplates/PositionMatrixSkillGroup", Model.ChildGroups[i]);
+                                }
+                            }
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

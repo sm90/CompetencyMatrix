@@ -1,0 +1,177 @@
+﻿@using CompetencyMatrix.ViewModels
+@using CompetencyMatrix.Infrastructure
+@model CompetencyMatrix.ViewModels.PositionMatrixSkills
+
+<script src="@Url.Content("~/js/Shared/EditorTemplates/PositionMatrixEditor.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Shared/SkillTree.js")" asp-append-version="true"></script>
+
+<style>
+    body {
+        overflow-y: hidden;
+    }
+</style>
+
+<div id="matrixEditorContainer">
+    <div class="cursorover">
+        <a href="javascript: void(0);" onclick="goBack()" class="navbar-link">
+            <span class="glyphicon glyphicon-circle-arrow-left"></span>
+            Back to Position matrix details
+        </a>
+    </div>
+
+    <div class="row header-row">
+
+        <div class="col-lg-4" id="searchContainer">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" title="Search matrix" id="editPositionMatrix_txtSearch">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" title="Clear search" id="editPositionMatrix_clearSearch">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <div class="col-lg-8">
+
+
+
+            <table width="100%">
+                <tr>
+                    <td>
+                        <label id="lblMatrixName" style="margin-bottom:5px;" data-type="text">@Model.MatrixName</label>
+                    </td>
+                    <td>
+                        @{
+                            if (User.IsInRole("Admin"))
+                            {
+                                <label class="radio-inline">
+                                    <input type="radio" asp-for="IsPublic" value="true" checked="@Model.IsPublic">
+                                    Public
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" asp-for="IsPublic" value="false" checked="@(!Model.IsPublic)">
+                                    Private
+                                </label>
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @{Html.RenderPartial("Controls/ButtonPanel", new ButtonPanelModel()
+                            {
+                                Css = "pull-left",
+                                Buttons = new List<ButtonModel>() {
+                                            new ButtonModel { Name="Add Group", Type=ButtonType.Add, Id="btnAddGroup", DataTarget="positionMatrixEditGroupDialog" },
+                                            new ButtonModel { Name="Rename Group", Type=ButtonType.Edit, Id="btnRenameGroup", Disabled=true  },
+                                            new ButtonModel { Name="Remove", Type=ButtonType.Remove, Id="btnRemove", Disabled=true }
+                            }
+                            });
+                        }
+                    </td>
+                    <td al>
+
+                        @{
+                            Html.RenderPartial("Controls/ButtonPanel", new ButtonPanelModel()
+                            {
+                                Css = "pull-right",
+                                Buttons = new List<ButtonModel>() {
+                                            new ButtonModel { Name="Cancel", Type=ButtonType.Cancel, Id="btnCancel" },
+                                            new ButtonModel { Name="Done",  Type=ButtonType.Save, Id="btnSave" }
+                                }
+                            });
+
+                        }
+
+                    </td>
+                </tr>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-4" style="padding: 2px;" id="skilltreePositionMatrixEditorContainer">
+            <div style="overflow-y:auto;" id="editMatrixSkillTree">
+                <div class="well">
+                    <table id="skilltreePositionMatrixEditor" class="table table-condensed table-striped table-hover">
+                        <colgroup>
+                            <col width="0px" />
+                            <col width="*" />
+                            <col width="30px" style="align-content: center" />
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8" style="padding: 2px">
+            <div id="detailsView" class="well droppable">
+
+                <div id="group_leaf">
+
+                    @{ await Html.RenderPartialAsync("EditorTemplates/PositionMatrixSkillGroup", new PositionMatrixSkillGroup()
+                        {
+                            SkillViewType = SkillViewType.Skill,
+                            Skills = Model.Skills
+                        }); }
+                </div>
+
+
+                @if (Model.Groups.Count == 0 && Model.Skills.Count == 0)
+                {
+                    <div class="text-center" id="emptyPlaceholder" style="height: 100%; margin-top:0px">
+                        <div id="droppable" class="ui-widget-header selectable ">
+                            No Skills added<br />
+                            Use Drag and Drop to add skills
+                        </div>
+                    </div>
+                }
+
+                @for (int index = 0; index < Model.Groups.Count; index++)
+                {
+                    @Html.EditorFor(m => m.Groups[index])
+                }
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+<div id="positionMatrixEditGroupDialog" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" style="width: 500px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="addGroupTitle">Add group</h4>
+            </div>
+            <div class="modal-body" id="positionMatrixEditGroupArea">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    var positionMartix = @Html.Raw(Json.Serialize(Model));
+    var positionMatrixManager;
+    var getGroupUIUrl = '@Url.Action("PrepareMatrixSkillGroup", "PositionMatrix")';
+    var getUpdateUrl = '@Url.Action("Update", "PositionMatrix")';
+    var getUpdateGroupUrl = '@Url.Action("EditSkillGroup", "PositionMatrix")';
+
+    initSkillTree();
+
+</script>

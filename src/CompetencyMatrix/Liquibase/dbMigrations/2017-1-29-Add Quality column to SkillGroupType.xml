@@ -1,0 +1,32 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+
+  <changeSet author="a.tsatsuyev (generated)" id="148342322347711111-28" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <addColumn tableName="SkillGroupType">
+      <column name="Quality" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+
+    <update  tableName="SkillGroupType">
+      <column name="Quality" value="1"/>
+      <where>id = 3</where>
+    </update>
+
+    <update  tableName="SkillGroupType">
+      <column name="Quality" value="2"/>
+      <where>id = 1</where>
+    </update>
+
+
+
+  </changeSet>
+
+
+
+
+</databaseChangeLog>

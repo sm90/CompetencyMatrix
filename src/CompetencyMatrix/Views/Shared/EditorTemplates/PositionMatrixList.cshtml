@@ -1,0 +1,112 @@
+﻿@using System.Runtime.InteropServices.ComTypes
+@using System.Security.Claims
+@using System.Threading.Tasks
+@using CompetencyMatrix.Models
+@using CompetencyMatrix.ViewModels
+@model CompetencyMatrix.ViewModels.PositionMatrixList
+<style>
+	/*#positionMatrixList .ui-selecting {
+		background: #FECA40;
+	}*/
+
+	/*#positionMatrixList .ui-selected  {
+		background: #F39814;
+		color: white;
+	}*/
+</style>
+
+<div class="well">
+
+    <div class="input-group" style="margin-bottom: 8px; margin-top: 0px">
+        <input type="text" class="form-control" placeholder="Search" title="Search positions" id="positionMatrixList_txtSearch" />
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" title="Clear search" id="positionMatrixList_clearSearch">
+                <span class="glyphicon glyphicon-remove-circle"></span>
+            </button>
+        </span>
+    </div>
+    @{
+        if (Context.User.IsInRole("Admin") || Context.User.IsInRole("HR"))
+        {
+            <div class="btn-toolbar">
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="glyphicon glyphicon-plus-sign"></span>
+                        Add <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="positionMatrixList_new" data-toggle="modal" data-target="#positionMatrixCreateModal">New matrix</a></li>
+                        <li><a href="#" id="positionMatrixList_import">Import from...</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="positionMatrixCreateModal" class="modal fade">
+                @Html.Partial("EditorTemplates/PositionMatrixCreateForm", new PositionMatrixDetails())
+            </div>
+        }
+    }
+
+    <ul class="list-group" style="margin-top: 8px; overflow-y:auto" id="positionMatrixList">
+        @for (int index = 0; index < Model.Count; index++)
+        {
+            @Html.EditorFor(m => m[index])
+        }
+    </ul>
+</div>
+
+<script>
+	var urlGetSkillsUi = "@Url.Action("GetPositionMatrixSkillsUI", "PositionMatrix")";
+    var urlGetDetailsUi = "@Url.Action("GetPositionMatrixDetailsUI", "PositionMatrix")";
+    var urlDelete = "@Url.Action("Delete", "PositionMatrix")";
+
+	$('#positionMatrixCreateModal')
+	    .on('shown.bs.modal',
+	        function() {
+	            $('#positionMatrixCreateModalFormName').focus();
+	        });
+	$(function() {
+	    var positionMatrixListHasItems = @((Model.Count > 0).ToString().ToLower());
+	    positionMatrixListInitSelectable();
+	    if (positionMatrixListHasItems) {
+	        selectPositionMatrix(@ViewData["SelectedItemId"]);
+	    }
+	});
+    
+    var list = $("#positionMatrixList");
+
+    $('#positionMatrixList_txtSearch')
+        .keyup(function(e)
+        {
+            var match = $(this).val().toLocaleLowerCase();
+
+            if (e && e.which === $.ui.keyCode.ESCAPE || $.trim(match) === "") {
+                $("button#positionMatrixList_clearSearch").click();
+                return;
+            }
+            list.children('li').each(function()
+            {
+                var text = $(this).text().toLocaleLowerCase();
+                (text.indexOf(match) >= 0) ? $(this).show() : $(this).hide();
+            });
+        });
+
+    $("#positionMatrixList_clearSearch")
+          .click(function (e) {
+              $("#positionMatrixList_txtSearch").val("");
+              list.children('li').each(function (){ $(this).show() });
+          });
+
+    function makeScrollableMatrixList() {
+        var bottom = getLayoutFooter().position();
+        var top = $('#positionMatrixList').offset();
+        var diff = bottom.top - top.top;
+        var val = diff.toString() + 'px';
+        $('#positionMatrixList').css('max-height', val);
+    }
+
+    $(function() {
+        $(window).resize(function () {
+            makeScrollableMatrixList();
+        }).resize();
+    });
+</script>

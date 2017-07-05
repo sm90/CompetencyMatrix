@@ -1,0 +1,120 @@
+﻿@model CompetencyMatrix.ViewModels.EmployeePositionSkillsGaps
+
+@Html.Hidden("employeeId", new { @id = "employeeId" })
+
+<style type="text/css">
+    .square {
+        background-color: none;
+        margin-left: 10px;
+        border: 1px solid;
+        display: inline-block;
+        height: 20px;
+        vertical-align: top;
+        width: 20px;
+        text-align: center;
+        zoom: 1;
+        }
+    .square-red {
+        background-color: #F08080;
+        }
+    .square-green {
+        background-color: #90EE90;
+        }
+    .square-yellow {
+        background-color: #FFFACD;
+        }
+
+    @@media print {
+        .noprint { display: none; }
+        .modal { position: relative; }
+        .modal-dialog { width: 100% !important; margin: 0px; }
+        .modal-content { border-radius: 0px; }
+        .well { padding: 0px; border: none; }
+        #positionsList { 
+            border: none; 
+            background: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            font-size: 14pt;
+        }
+        #gapsPrintUserName { 
+            display:inline !important; 
+            padding-left: 14px;
+        }
+    }
+</style>
+
+<div class="pull-left" role="group" aria-label="...">
+    <select class="form-control" placeholder="Positions" id="positionsList">
+        @foreach (var item in ViewBag.Positions)
+            {
+                <option Value="@item.Id" >@item.Name</option>
+            }
+    </select>
+</div>
+<div class="pull-left" role="group" style="padding-left: 12px">
+    <h4 id="compliance-score">0</h4>
+</div>
+<div class="btn-group pull-right noprint" role="group" aria-label="...">
+    <button type="button" class="btn btn-default btn-md btn-block" data-url="@Url.Action("GetGapAnalysisPdf", "Employees")" id="btnExportPdf" onclick="exportToPdf()" > Export to PDF</button>
+</div>
+
+<div id="gapsContainer" >
+    
+        @await Html.PartialAsync("GapAnalysisTablePartial", Model)
+    
+</div>
+<div class="clearfix"></div>
+<div id="squares" class="noprint">
+    <div class="square square-green">
+        <i class='glyphicon glyphicon-star' style='color:yellow;'></i>
+    </div><span> - Overskill</span>
+
+    <div class="square square-green">
+    </div><span> - Full Level Match</span>
+
+    <div class="square square-yellow">
+    </div><span> - Level Bellow Required</span>
+
+    <div class="square square-red">
+    </div><span> - Missing Level</span>
+</div>
+    <script>
+        function exportToPdf() {
+            window.print();
+
+            //var employeeId = $('#employeeId').val(),
+            //    positionId = $('#positionsList').val();
+
+            //var url = $('#btnExportPdf').data('url') + '?employeeId=' + employeeId + '&positionId=' + positionId;
+            //$("<a>").attr("href", url).attr("target", "_blank")[0].click();
+        }
+
+        $("#positionsList")
+            .change(
+			function()
+			{
+			    var url = "@Url.Action("GetGapAnalys", "Employees")";
+
+			    var data =
+					{
+					    employeeId: $('#employeeId').val(),
+					    positionId: $('#positionsList').val()
+					};
+
+			    $.ajax({
+			        url: url,
+			        type: "GET",
+			        data: data,
+			        success: function (result, status)
+			        {
+			            if (status == "success")
+			            {
+			                $("#gapsContainer").html(result);
+			            }
+			        }
+			    });
+			});
+
+    </script>

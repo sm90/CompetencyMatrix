@@ -1,0 +1,95 @@
+﻿@model CompetencyMatrix.ViewModels.SkillLevelCriteriaMatrix
+
+<div id="SkillLevelCriteriaMatrixEditor">
+
+	@Html.HiddenFor(m => m.SkillId)
+    @Html.HiddenFor(m => m.IsEditable)
+
+	<table id="skillLevelCriteriaTable" class="table table-condensed table-hover table-striped table-bordered">
+		<colgroup>
+			<col width="*" />
+			@for (int i = 0; i < Model.Levels.Count; i++)
+			{
+			<col width="auto" />
+			}
+			<col width="20px" />
+		</colgroup>
+		<thead>
+			<tr>
+				<th>Criterias</th>
+				<th colspan="@(Model.Levels.Count + 1)">Levels</th>
+			</tr>
+			@if (Model.Levels.Count > 0)
+			{
+			<tr>
+				<th>*</th>
+				@for (int i = 0; i < Model.Levels.Count; i++)
+				{
+				<th class="skillLevelCriteriaTableLevelHeaderCell">
+					@{
+						var levelNameHiddenId = Html.IdFor(m => m.Levels[i].SkillLevelModelName);
+						var levelName = Model.Levels[i].SkillLevelModelName;
+						var levelNameLabelId = string.Format("{0}_lbl", Html.IdFor(m => m.Levels[i]));
+					}
+
+					@Html.DisplayFor(m=>m.Levels[i].SkillLevelModelName)
+					@Html.HiddenFor(m => m.Levels[i].SkillLevelModelId)
+					@Html.HiddenFor(m => m.Levels[i].SkillLevelModelName)
+
+				</th>
+				}
+				<th>*</th>
+			</tr>
+						}
+		</thead>
+		<tbody>
+			@for (int i = 0; i < Model.Rows.Count; i++)
+			{
+			@Html.EditorFor(m => m.Rows[i])
+			}
+
+		<tr>
+            @{
+                if (Model.IsEditable && (Context.User.IsInRole("Admin") || Context.User.IsInRole("EM")))
+                {
+                    <td colspan="@(Model.Levels.Count + 2)">
+                        <button type="button" class="btn btn-default" title="Add criteria" id="btnAddCriteria">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
+                            Add criteria
+                        </button>
+                    </td>
+                }
+            }
+              </tr>
+		</tbody>
+	</table>
+</div>
+
+<script>
+
+	$("#btnAddCriteria")
+		.bind("click",
+			function(event, data)
+			{
+				var url = "@Url.Action("AddSkillLevelCriteriaMatrixRow", "Skill")";
+
+				var matrixData = $("#SkillLevelCriteriaMatrixEditor :input").serialize();
+                debugger;
+				$.ajax({
+					url: url,
+					type: "POST",
+					data: matrixData,
+					//contentType: "application/json; charset=utf-8",
+					//dataType: "json",
+					success: function (result, status)
+					{
+						if (status != "error")
+						{
+							$("#SkillLevelCriteriaMatrixEditor").replaceWith(result);
+						}
+					}
+				});
+			});
+
+
+</script>

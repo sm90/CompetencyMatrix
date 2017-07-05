@@ -1,0 +1,48 @@
+﻿@model IEnumerable<CompetencyMatrix.Models.Employee>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ExportView</title>
+</head>
+<body>
+    <div>
+        <table>
+            <tr>
+                <th>
+                    
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cell)
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                @item.Name
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cell)
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</body>
+</html>

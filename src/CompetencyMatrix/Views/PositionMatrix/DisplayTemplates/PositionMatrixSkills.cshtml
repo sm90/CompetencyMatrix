@@ -1,0 +1,14 @@
+﻿@using CompetencyMatrix.ViewModels
+@model CompetencyMatrix.ViewModels.PositionMatrixSkills
+
+<div class="well">
+    @if (Model.Skills.Count > 0)
+    {
+        await Html.RenderPartialAsync("DisplayTemplates/PositionMatrixSkillGroup", new PositionMatrixSkillGroup() { Skills = Model.Skills, SkillViewType = SkillViewType.Skill });
+    }
+
+    @for (int index = 0; index < Model.Groups.Count; index++)
+    {
+        @Html.DisplayFor(m => m.Groups[index])
+    }
+</div>

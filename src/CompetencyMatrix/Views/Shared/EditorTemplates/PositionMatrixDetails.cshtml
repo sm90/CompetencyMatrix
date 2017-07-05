@@ -1,0 +1,116 @@
+﻿@model CompetencyMatrix.ViewModels.PositionMatrixDetails
+@Html.HiddenFor(a=> a.Id)
+@Html.HiddenFor(model=>model.HasChildren)
+@Html.HiddenFor(model=>model.ChildrenPlainList)
+<div class="well">
+	<div class="form-group">
+		<label asp-for="Name"></label>
+        <div>
+            <label id="lblMatrixName" data-type="text">@Model.Name</label>
+        </div>
+	</div>
+
+	<div class="form-group">
+		<label asp-for="Description"></label>
+        <div>
+            <label id="lblMatrixDescription" data-type="text">@Model.Description</label>
+        </div>
+	</div>
+	
+	<div class="form-group">
+		<label>Parent matrixes</label>
+		@Html.Editor("Parents", "PositionMatrixInheritanceBreadCrumbs")
+	</div>
+	
+	<div class="form-group">
+		<label>Child matrixes</label>
+		@Html.Editor("Children", "PositionMatrixInheritanceBreadCrumbs")
+	</div>
+
+	<div class="form-group">
+	    <label>Access mode</label>
+	    <div>
+            <label class="radio-inline disabled">
+                <input type="radio" asp-for="IsPublic" value="true" disabled checked="@Model.IsPublic">
+                Public
+            </label>
+            <label class="radio-inline disabled">
+                <input type="radio" asp-for="IsPublic" value="false" disabled checked="@(!Model.IsPublic)">
+                Private
+            </label>
+	    </div>		
+	</div>
+	
+	<div class="form-group">
+	    <label>Matrix owner</label>
+	    <div>
+	        @Model.Owner
+	    </div>
+	</div>
+	
+	<div class="form-group">
+	    <div class="btn-group-vertical" style="width: 100%;">
+	        @{
+	            if (Context.User.IsInRole("Admin") || Context.User.IsInRole("HR"))
+	            {
+	                <button type="button" class="btn btn-default" onclick="editMatrix()">Edit matrix</button>
+	                <button type="button" class="btn btn-default" onclick="deleteMatrix()">Delete matrix</button>
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#positionMatrixInheritanceManagemenDialog" data-backdrop="static">Manage inheritance</button>
+                }
+            }	        
+	        <button type="button" class="btn btn-default" id="exportMatrixId" onclick="exportMatrixToPdf()">Export matrix</button>
+	        <button type="button" class="btn btn-default">Generate interview form</button>
+        </div>
+	</div>
+
+    <script>
+        $("#lblMatrixName")
+            .editable(
+                {
+                    title: "Change name",
+                    success: function (response, newValue) {
+                        oldName = this.innerText;
+                        if (newValue) {
+                            updateMatrixDetails({ name: newValue });
+                        }
+                        else {
+                            showAlert('Error', 'Please enter name for matrix.');
+                        }
+                    }
+                });
+
+        $("#lblMatrixDescription")
+            .editable(
+                {
+                    title: "Change description",
+                    success: function (response, newValue) {
+                        if (newValue) {
+                            updateMatrixDetails({ description: newValue });
+                        }
+                    }
+                });
+
+        var oldName = null;
+        function updateMatrixDetails(details) {
+            var data = {
+                id: $('#Id').val(),
+            }
+            data.name = details.name ? details.name : $('#lblMatrixName').text();
+            data.description = details.description ? details.description : $('#lblMatrixDescription').text();
+
+            if (data.name === "Empty")
+                data.name = oldName;
+
+            $.ajax({
+                url: "/PositionMatrix/UpdateMatrixDetails",
+                type: "POST",
+                data: data,
+                success: function (result, status) {
+                    if (status != "error") {
+                        
+                    }
+                }
+            });
+        }
+    </script>
+</div>

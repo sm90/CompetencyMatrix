@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+<include file="2017-2-15-RepopulatedPermissionsTable.xml" relativeToChangelogFile="true" />
+<include file="14-11-2016-changePastProjectEndDate.xml" relativeToChangelogFile="true" />
+<include file="2016-11-24-addedIsDeletedToPositionMatrix.xml" relativeToChangelogFile="true" />
+<include file="2016-11-26-ScriptForTrainingAndSertification.xml" relativeToChangelogFile="true" />
+<include file="2016-12-12-AddedOwnerAndIsPublicToPositionMatrix.xml" relativeToChangelogFile="true" /> 
+<include file="2016-12-22-UpdateSkillGroupType.xml" relativeToChangelogFile="true" /> 
+<include file="2017-1-3-Add columns PositinMatrixSkillGroup.xml" relativeToChangelogFile="true" />
+<include file="2017-1-4-Add columns PositinMatrixSkillAndGroup.xml" relativeToChangelogFile="true" />  
+<include file="2017-1-11-Add FK to PositionMatrixSkillGroup_Parent_overriden.xml" relativeToChangelogFile="true" />
+<include file="2017-1-29-Add Quality column to SkillGroupType.xml" relativeToChangelogFile="true" />
+<include file="2017-2-04-UpdateEmployeeProfileStatus.xml" relativeToChangelogFile="true" />
+<include file="2017-02-10-AddedLogTable.xml" relativeToChangelogFile="true" />
+<include file="2017-02-10-UpdateEmployeeMatrixApproval.xml" relativeToChangelogFile="true" />
+<include file="2017-02-13-AddMailTemplates.xml" relativeToChangelogFile="true" />
+<include file="2017-02-14-Add Status to ChangeLog.xml" relativeToChangelogFile="true" />
+  
+
+</databaseChangeLog>

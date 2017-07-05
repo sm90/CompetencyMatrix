@@ -1,0 +1,21 @@
+﻿@using System.Security.Claims;
+<script>
+
+	$("#navBarIndex").addClass("active");
+
+</script>
+
+<div class="jumbotron">
+    <h1>Competency matrix welcomes you</h1>
+    @if (User.Identities.Any(u => u.IsAuthenticated))
+    {
+        <h1>
+            Hello @User.Identities.First(
+      u => u.IsAuthenticated &&
+      u.HasClaim(c => c.Type == ClaimTypes.Name)).FindFirst(ClaimTypes.Name).Value
+        </h1>
+    }
+</div>
+
+
+

@@ -1,0 +1,49 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+  <changeSet author="a.tsatsuyev" id="14834227723497-337" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <createTable tableName="MailTemplate">
+      <column autoIncrement="true" name="Id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="Subject" type="nvarchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="Body" type="nvarchar(max)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="Type" type="int" >
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+  </changeSet>
+
+  <changeSet author="a.tsatsuyev" id="14834227723497-38" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <insert tableName="MailTemplate">
+      <column name="Subject" value="Submit profile notification"/>
+      <column name="Body" value="Hi {{Manager}}, {{Employee}} has made some changes in the profile. Could you please approve or reject them."/>
+      <column name="Type" value="1"/>
+    </insert>
+
+    <insert tableName="MailTemplate">
+      <column name="Subject" value="Approve profile notification"/>
+      <column name="Body" value="Hi {{Employee}}, {{Manager}} has approved your profile."/>
+      <column name="Type" value="2"/>
+    </insert>
+
+    <insert tableName="MailTemplate">
+      <column name="Subject" value="Reject profile notification"/>
+      <column name="Body" value="Hi {{Employee}}, {{Manager}} has rejected your profile."/>
+      <column name="Type" value="3"/>
+    </insert>
+
+
+  </changeSet>
+
+
+</databaseChangeLog>

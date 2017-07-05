@@ -1,0 +1,22 @@
+﻿@using System.Collections.Generic;
+@using CompetencyMatrix.ViewModels;
+
+
+@model  List<PositionMatrixSkillListItem>
+
+@{
+
+    foreach (var skill in Model)
+    {
+        if (ViewData["IsJsonResult"] != null)
+        {
+            await Html.RenderPartialAsync("PositionMatrix/EditorTemplates/PositionMatrixSkill", skill);
+        }
+        else
+        {
+            await Html.RenderPartialAsync("EditorTemplates/PositionMatrixSkill", skill);
+        }
+
+    }
+
+}

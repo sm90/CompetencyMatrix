@@ -1,0 +1,30 @@
+﻿@model List<CompetencyMatrix.ViewModels.BreadCrumb>
+
+<style>
+	.breadcrumb > li + li:before {
+		color: #808080;
+		content: "> ";
+	}
+</style>
+
+<ol class="breadcrumb" style="margin: 0px; padding: 0px">
+	@for (int i = 0; i < Model.Count; i++)
+	{
+		if (i == Model.Count - 1)
+		{
+			<li class="active">@Html.ValueFor(m => m[i].Path)</li>
+		}
+		else
+		{
+			if (Model[i].IsCategory)
+			{
+			<li><a href="javascript:selectSkillCategoryNode(@Model[i].Id)">@Html.ValueFor(m => m[i].Path)</a></li>
+			}
+			else
+			{
+			<li><a href="javascript:selectSkillNode(@Model[i].Id)">@Html.ValueFor(m => m[i].Path)</a></li>
+			}
+		}
+	}
+</ol>
+

@@ -1,0 +1,1 @@
+liquibase  --changeLogFile=dbMigrations/db.changelog.xml generateChangeLog

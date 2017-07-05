@@ -1,0 +1,13 @@
+@model CompetencyMatrix.ViewModels.ButtonPanelModel
+
+<div  role="toolbar">
+    <div class="@Model.Css">
+
+        @foreach (var button in Model.Buttons)
+        {
+            Html.RenderPartial("Controls/Button", button);
+        }
+        <div class="clearfix"></div>
+    </div>
+    <div class="clearfix"></div>
+</div>

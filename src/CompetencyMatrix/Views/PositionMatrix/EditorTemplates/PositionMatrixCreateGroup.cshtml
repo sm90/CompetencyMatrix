@@ -1,0 +1,59 @@
+﻿@using CompetencyMatrix.ViewModels
+@model CompetencyMatrix.ViewModels.PositionMatrixSkillGroup
+
+
+<form id="positionMatrixEditGroupModalForm" class="form-horizontal" role="form" asp-controller="PositionMatrix" asp-action="UpdateSkillGroup" data-ajax="true" data-ajax-success="onUpdateGroup"  data-ajax-method="POST">
+    <div class="modal-body">
+        <br />
+
+        @Html.HiddenFor(a => a.Id)
+        @Html.HiddenFor(a => a.State)
+        @Html.HiddenFor(a => a.GroupTypeId)
+        @Html.HiddenFor(a => a.ChildGroups)
+        @Html.HiddenFor(a => a.ParentGroupId)
+        @Html.HiddenFor(a => a.MatrixId)
+
+        @*<div asp-validation-summary="All" class="text-danger"></div>*@
+        <div class="form-group">
+            <label asp-for="Name" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input id="positionMatrixCreateModalFormName" asp-for="Name" class="form-control" />
+                <span id="positionMatrixCreateModalFormWarning" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    @{
+        Html.RenderPartial("Controls/ButtonPanel", new ButtonPanelModel()
+        {
+            Css = "modal-footer",
+            Buttons = new List<ButtonModel>() {
+                        new ButtonModel { Name="Cancel", OnClick="onBtnCancelClick();return false;", Type=ButtonType.Cancel, Id="btnCancel" },
+                        new ButtonModel { Name="Done", Type=ButtonType.Save, Id="btnSave" }
+                    }
+        });
+    }
+
+    <script type="text/javascript">
+
+        function onBtnCancelClick() {
+            closeModalDlg("positionMatrixEditGroupArea");
+        }
+
+        $('#positionMatrixEditGroupModalForm').submit(function () {
+
+            var name = $('#positionMatrixCreateModalFormName').val();
+            var group = positionMatrixManager.findGroupByName(name);
+            if (group) {
+                $('#positionMatrixCreateModalFormWarning').text('Group name should be unique for the matrix');
+                return false;
+            }
+            else
+                return true;
+        });
+
+        $.validator.unobtrusive.parse("#positionMatrixEditGroupModalForm");
+
+    </script>
+
+</form>

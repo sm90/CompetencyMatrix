@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace CompetencyMatrix.Models
+{
+    public partial class Role
+    {
+        public Role()
+        {
+            PermissionOnRole = new HashSet<PermissionOnRole>();
+            User = new HashSet<User>();
+        }
+
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+        public virtual ICollection<PermissionOnRole> PermissionOnRole { get; set; }
+        public virtual ICollection<User> User { get; set; }
+    }
+}

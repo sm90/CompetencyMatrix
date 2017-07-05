@@ -1,0 +1,45 @@
+﻿@{
+    Layout = "~/Views/Administration/_AdminLayout.cshtml";
+}
+@model CompetencyMatrix.ViewModels.LogsReportViewModel
+
+
+<form asp-controller="Administration" asp-action="Logs" data-ajax="true" data-ajax-method="GET" data-ajax-mode="replace" data-ajax-update="#logsList">
+    <div class="row toolsPanel">
+        <input asp-for="TopId">
+        <label class="control-label col-lg-1" asp-for="LogLevel"></label>
+        <div class="col-lg-2">
+            <select class="form-control" asp-for="LogLevel" placeholder="Log level filter" onchange="$(this.form).submit();" asp-items="ViewBag.LevelFilterOptions"></select>
+        </div>
+        <button type="button" class="btn btn-default" onclick="document.location = '@Url.Action("Logs", "Administration")';">
+            <span class="glyphicon glyphicon-refresh"></span> Refresh
+        </button>
+    </div>
+</form>
+<div>
+    @await Html.PartialAsync("LogsList", Model.LogItems)
+</div>
+<script>
+    var getLogPage = function() {
+        var $a = $(this);
+        var options = {
+            url: $a.attr("href"),
+            data: $('form').serialize(),
+            type: 'get'
+        };
+
+        $.ajax(options)
+            .done(function(data) {
+                var target = $a.parents("div.pagedList").attr('data-cm-target');
+                $(target).replaceWith(data);
+            });
+
+        return false;
+    };
+
+    $(function() {
+        activateAdminMenItem("#adminLogsMenuitem");
+        $(".admin-content").on('click', ".pagedList li:not(.disabled) a", getLogPage);
+    });
+
+</script>

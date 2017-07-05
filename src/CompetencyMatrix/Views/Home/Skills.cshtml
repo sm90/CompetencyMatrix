@@ -1,0 +1,38 @@
+﻿<script src="~/js/Shared/SkillTree.js"></script>
+<script src="~/js/Home/Skills.js"></script>
+
+<style>
+	.collapsing.width {
+		-webkit-transition-property: width, visibility;
+		transition-property: width, visibility;
+		width: initial;
+		height: initial;
+	}
+</style>
+
+<script>
+
+	$("#navBarSkills").addClass("active");
+
+</script>
+
+
+<script type="text/javascript">
+
+
+</script>
+
+<div class="row">
+	<div class="col-lg-4" style="padding: 2px">
+		<div>
+			@await Html.PartialAsync("SkillTree")
+		</div>
+	</div>
+	<div class="col-lg-8" style="padding: 2px">
+		<div id="detailsView">
+			<div class="jumbotron text-center" style="height: 100%; margin-top:0px">
+				<p style="color: GrayText">Please select skill or skill category to edit</p>
+			</div>
+		</div>
+	</div>
+</div>

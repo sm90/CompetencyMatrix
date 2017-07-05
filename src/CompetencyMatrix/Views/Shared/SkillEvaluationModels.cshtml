@@ -1,0 +1,80 @@
+﻿@model List<CompetencyMatrix.ViewModels.SkillEvaluationModelViewModel>
+
+<div id="skillEvaluationModelsEditor">
+	
+	<form id="skillEvaluationModelsEditorForm"
+	      asp-controller="SkillEvaluationModel"
+	      asp-action="SaveEvaluationViewModels"
+	      method="post"
+	      role="form"
+	      data-ajax="true"
+	      data-ajax-method="POST"
+	      data-ajax-success="skillEvaluationModelsEditor_success"
+	      dataajax--update="#skillEvaluationModelsEditor"
+	      dataajax--mode="replace-with">
+
+		<div class="well">
+			<div class="form-group">
+				<label>Skill evaluation models</label>
+                <div style="overflow-x:auto; width:100%;">
+                    <select multiple class="form-control" style="width: auto;" placeholder="Skill level model" id="skillEvaluationModelsList">
+                        @foreach (var item in Model)
+                        {
+                            <option Value="@item.Id" selected="@item.Selected">@item.DisplayName</option>
+                        }
+                    </select>
+                    </div>
+                </div>
+
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group pull-right">
+					<button class="btn btn-default" type="button" title="Add skill evaluation model" id="btnAddEvaluationModel">
+						<span class="glyphicon glyphicon-plus"></span>
+						Add model
+					</button>
+					<button class="btn btn-default" type="button" title="Delete skill evaluation model" id="btnDeleteEvaluationModel">
+						<span class="glyphicon glyphicon-trash"></span>
+						Delete model
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="jumbotron" style="display: block" id="divNoModels">
+			<p>Please create or select a model</p>
+		</div>
+
+		@for (int index = 0; index < Model.Count; index++)
+		{
+			@Html.EditorFor(m => m[index], "SkillEvaluationModel", new { index } )
+		}
+
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group pull-right" role="group" aria-label="...">
+				<button type="submit" class="btn btn-default pull-right" title="Save changes" id="btnSaveEvaluationModel">
+					<span class="glyphicon glyphicon-floppy-disk"></span>
+					Save
+				</button>
+				<button type="button" class="btn btn-default pull-right" title="Cancel changes" id="btnCancelEvaluationModel" data-dismiss="modal">
+					<span class="glyphicon glyphicon-floppy-remove"></span>
+					Cancel
+				</button>
+			</div>
+		</div>
+
+	</form>
+
+     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+	<script>
+        var _SkillEvaluationModels_Add = "@Url.Action("AddEvaluationModel", "SkillEvaluationModel")";
+        var _Skills_GetByModel = "@Url.Action("GetSkillsByEvaluationModel", "Skill")";
+
+		$(function()
+		{
+			bindSkillEvaluationsModelEditorEvents();
+		});
+	</script>
+
+</div>
+

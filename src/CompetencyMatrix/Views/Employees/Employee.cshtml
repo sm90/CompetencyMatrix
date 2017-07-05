@@ -1,0 +1,59 @@
+﻿<script src="@Url.Content("~/js/Employees/EmployeeCommon.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Employees/EmployeeSkillTree.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Employees/EmployeesSkillTreeOptions.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Employees/EmployeePastProjectTree.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Employees/EmployeesPastProjectTreeOptions.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Employees/ChangeLogTree.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Employees/EmployeesChangeLogTreeOptions.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Employees/EmployeeSertificationTab.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Shared/SkillTree.js")" asp-append-version="true"></script>
+
+@using System.Threading.Tasks
+@model CompetencyMatrix.ViewModels.EmployeeModel
+
+<script>
+    $("#navBarEmployees").addClass("active");
+</script>
+@*Big form for edit skills*@
+<div class="modal fade " id="employeeEditSkillModalId" role="dialog">
+    <div class="modal-dialog modal-lg" style="width: 1024px; overflow: hidden;">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Skills</h4>
+            </div>
+            <div class="modal-body" id="modalContentEditSkill">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cursorover noprint">
+    <a href="@Url.Action("Employees", "Employees")" class="navbar-link" >
+        <span class="glyphicon glyphicon-circle-arrow-left"></span>
+        Back to list of Employees
+    </a>
+</div>
+@Html.HiddenFor(a=> Model.Id, new { @id = "employeeStoredId"})
+<div class="well">
+    @await Html.PartialAsync("EmployeeHeaderPartial", Model)
+</div>
+<div class="well noprint">
+    @await Html.PartialAsync("EmployeeTabsPartial", Model)
+</div>
+
+<script>
+    function skillsEdit() {
+        //in new Window
+        var urlForLoadSkillPartial = "@Url.Action("EmployeeSkills", "Employees")";
+        window.open(urlForLoadSkillPartial, '_self', false);
+        return;
+    }
+
+    function editSertifications() {
+        var urlForLoadSkillPartial = "@Url.Action("Index", "TrainingSertifications", new { employeeId = Model.Id })";
+        window.open(urlForLoadSkillPartial, '_self', false);
+    }
+
+</script>

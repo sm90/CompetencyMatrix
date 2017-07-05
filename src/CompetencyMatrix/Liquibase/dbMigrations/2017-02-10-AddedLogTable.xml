@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="v.grebinnyk (generated)" id="1486723904166-15" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createTable tableName="Log">
+            <column autoIncrement="true" name="Id" type="INT">
+                <constraints primaryKey="true" primaryKeyName="PK_dbo.Log"/>
+            </column>
+            <column name="Logged" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Level" type="NVARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Message" type="NVARCHAR(MAX)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Logger" type="NVARCHAR(250)"/>
+            <column name="Exception" type="NVARCHAR(MAX)"/>
+            <column name="Environment" type="NVARCHAR(MAX)"/>
+            <column name="EventId" type="NVARCHAR(MAX)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="v.grebinnyk (generated)" id="1486723904166-83" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex clustered="false" indexName="IX-Log-Level" tableName="Log" unique="false">
+            <column name="Level"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="v.grebinnyk (generated)" id="1486723904166-84" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex clustered="false" indexName="IX-Log-LoggedDate" tableName="Log" unique="false">
+            <column name="Logged"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="v.grebinnyk (generated)" id="1486723904166-85" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex clustered="false" indexName="IX-Log-Logger" tableName="Log" unique="false">
+            <column name="Logger"/>
+        </createIndex>
+    </changeSet>   
+</databaseChangeLog>

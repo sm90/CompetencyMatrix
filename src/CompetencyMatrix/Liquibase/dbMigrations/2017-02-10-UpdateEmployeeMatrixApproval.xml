@@ -1,0 +1,29 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+  <changeSet author="a.tsatsuyev" id="14834227723495-34" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <dropTable tableName="EmployeeMatrixApproval" />
+
+    <createTable tableName="EmployeeMatrixApproval">
+      <column autoIncrement="true" name="Id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ByWhom" type="nvarchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="When" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="EmployeeId" type="int" >
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseColumnNames="EmployeeId" baseTableName="EmployeeMatrixApproval" constraintName="FK_EmployeeMatrixApproval_Employee" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="Id" referencedTableName="Employee"/>
+
+  </changeSet>
+
+</databaseChangeLog>

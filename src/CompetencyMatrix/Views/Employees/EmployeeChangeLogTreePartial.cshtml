@@ -1,0 +1,49 @@
+﻿<style>
+        span.ws-wrap span.fancytree-title {
+            white-space: normal;
+        }
+
+        span.ws-nowrap span.fancytree-title {
+            white-space: nowrap;
+        }
+
+        span.ws-pre span.fancytree-title {
+            white-space: pre;
+        }
+</style>
+
+
+<table id="employeeChangeLogTree" class="table table-condensed table-striped table-hover">
+    <colgroup class="row">
+        
+        <col width="200" />
+        <col width="*" />
+        <col width="200" />
+
+
+    </colgroup>
+    <thead class="row" style="background-color: darkgray">
+    <tr>
+        
+        <th>Date</th>
+        <th>Action Description</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    initEmployeesChangeLogTree();
+    var tree = $("#employeeChangeLogTree").fancytree("getTree");
+    var pathforLoadChangeLogTree = "@Url.Action("GetChangeLogRoot", "Employees")";
+    tree.reload({ url: pathforLoadChangeLogTree })
+        .done(function (event) {
+        });
+</script>

@@ -1,0 +1,63 @@
+﻿@using System.Threading.Tasks
+@using CompetencyMatrix.Models
+@using Microsoft.AspNetCore.Identity
+@model WebApplicationCore.Models.AccountViewModels.LoginViewModel
+@inject SignInManager<ApplicationUser> SignInManager
+
+    <form asp-controller="Account" data-ajax-success="loginSuccess" data-ajax-failure="loginFailure" onsubmit="$('#loginValidationSummary').html('')" data-ajax="true" data-ajax-method="POST" asp-action="LoginPopup" method="post" class="form-horizontal">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 align">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">&nbsp;</label>
+                    <div class="col-md-1">&nbsp;</div>
+                    <div class="col-md-7">
+                        <div id="loginValidationSummary" class="text-danger"></div>            
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email" class="col-md-2 control-label"></label>
+                    <div class="col-md-1">&nbsp;</div>
+                    <div class="col-md-7">
+                        <input asp-for="Email" class="form-control" title="" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="col-md-2 control-label"></label>
+                    <span class="col-md-1"></span>
+                    <div class="col-md-7">
+                        <input asp-for="Password" class="form-control" title="" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-5 col-md-10">
+                        <button type="submit" class="btn btn-default">Log in</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+    @section Scripts {
+        @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    }
+
+<script>
+
+    function loginSuccess(data, result) {
+        if (data.success) {
+            $('#loginDialog').modal('hide')
+        }
+        else {
+            $('#loginValidationSummary').html(data.message);
+        }        
+    }
+
+
+
+
+
+</script>

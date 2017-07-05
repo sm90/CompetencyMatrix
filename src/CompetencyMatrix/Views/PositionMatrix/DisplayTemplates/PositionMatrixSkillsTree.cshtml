@@ -1,0 +1,155 @@
+﻿@using CompetencyMatrix.ViewModels
+@model CompetencyMatrix.ViewModels.PositionMatrixSkills
+
+@{
+}
+
+<style>
+    @@media print {
+        .noprint {
+            display: none;
+        }
+
+        .well {
+            padding: 0px;
+            border: none;
+        }
+
+        #printMatrixDetails {
+            display: block !important;
+        }
+
+        #printMatrixDetails>p {
+            padding: 0px;
+        }
+    }
+</style>
+
+<script src="@Url.Content("~/js/Shared/SkillTree.js")"></script>
+
+<div id="printMatrixDetails" style="display:none">
+    <h4>@Model.MatrixName</h4>
+    <p class="text-left">@Model.MatrixDescription</p>
+</div>
+<div class="well" style="padding: 0px">
+    <table id="skillTreePositionMatrixSkills" class="table table-condensed table-striped table-hover">
+        <colgroup>
+            <col width="*" />
+            <col width="*" />
+            <col width="*" />
+            <col width="*" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Skill Name</th>
+                <th>Inherited From</th>
+                <th>Tag</th>
+                <th>Level</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+<script>
+    var positionSkills = parseSkills(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)));
+    var matrixName = '@Model.MatrixName';
+
+    initPositionMatrixSkillsTree = function () {
+        $("#skillTreePositionMatrixSkills")
+        .fancytree({
+            extensions: ["glyph", "table"],
+
+            glyph: glyph_opts,
+
+            source: positionSkills,
+
+            table:
+                {
+                    indentation: 20,
+                    nodeColumnIdx: 0
+                },
+
+            renderColumns: function (event, data) {
+                var node = data.node,
+                    $tdList = $(node.tr).find(">td");
+
+                if (node.folder) {
+                    var mName = (data.node.data.model.MatrixName === matrixName) ? "" : data.node.data.model.MatrixName;
+                    $tdList.eq(1).text(htmlEncode(mName));
+                    $tdList.eq(2).text(data.node.data.groupType);
+                }
+                else {
+                    var model = data.node.data.model;
+                    
+                    $tdList.eq(1).text(model.MatrixName);
+
+                    $tdList.eq(3).text(model.SkillLevelName);
+                }
+            }
+        });
+    }
+
+    function parseSkills(positionSkills) {
+        var children = [];
+        $.each(positionSkills.Groups, function () {
+            children.push(parseSkillGroup(this));
+        });
+        $.each(positionSkills.Skills, function () {
+            children.push(parseSkill(this));
+        });
+        return children;
+    }
+
+    function parseSkillGroup(group) {
+        var lazy = false;
+        var subGroups = group.ChildGroups;
+        var skills = group.Skills;
+        return {
+            title: htmlEncode(group.Name),
+            groupType: group.GroupType.Name,
+            expanded: group.ParentGroupId == null,
+            folder: true,
+            lazy: lazy,
+            model: group,
+            children: ((subGroups !== undefined && subGroups != null && subGroups.length) ? parseSkillGroupsList(subGroups) : []).concat(((skills !== undefined && skills != null && skills.length) ? parseSkillsList(skills) : []))
+        }
+    }
+
+    function parseSkillGroupsList(groups) {
+        var children = [];
+        $.each(groups, function () {
+            children.push(parseSkillGroup(this));
+        });
+        return children;
+    }
+
+    function parseSkillsList(groups) {
+        var children = [];
+        $.each(groups, function () {
+            children.push(parseSkill(this));
+        });
+        return children;
+    }
+
+    function parseSkill(skill) {
+        return {
+            title: htmlEncode(skill.SkillName),
+            folder: false,
+            model: skill,
+            isLeaf: true,
+            children: null
+        }
+    }
+
+    initPositionMatrixSkillsTree();
+</script>

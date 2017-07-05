@@ -1,0 +1,35 @@
+@using CompetencyMatrix.ViewModels;
+@using CompetencyMatrix.Infrastructure;
+
+@model ButtonModel
+
+@if (Model.Visible)
+{
+
+
+    <button class="btn btn-default @Model.Css" @HtmlExtensions.Attr(Html, "type", "submit", "button", () => Model.Type == ButtonType.Save) title="@Model.Title" onclick="@Model.OnClick" id="@Model.Id"
+            data-target="#@Model.DataTarget" data-toggle="modal" @HtmlExtensions.Attr(Html, "disabled", "disabled", () => Model.Disabled)>
+
+        @switch (Model.Type)
+        {
+            case ButtonType.Save:
+                <span class="glyphicon glyphicon-floppy-save"></span>
+                break;
+
+            case ButtonType.Remove:
+                <span class="glyphicon glyphicon-trash"></span>
+                break;
+            case ButtonType.Add:
+                <span class="glyphicon glyphicon-plus-sign"></span>
+                break;
+            case ButtonType.Edit:
+                <span class="glyphicon glyphicon-edit"></span>
+                break;
+            case ButtonType.Cancel:
+                <span class="glyphicon glyphicon-floppy-remove"></span>
+                break;
+        }
+
+        @Model.Name
+    </button>
+}

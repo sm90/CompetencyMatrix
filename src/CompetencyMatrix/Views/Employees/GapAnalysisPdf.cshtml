@@ -1,0 +1,218 @@
+﻿@model CompetencyMatrix.ViewModels.EmployeePositionSkillsGaps
+@{
+    Layout = null;
+    var sum = Model.Groups.Sum(x => x.Gaps.Sum(g => g.Score));
+    sum += Model.Gaps.Sum(x => x.Score);
+    var overallComplianceScore = 0;
+    if (sum > 0)
+    {
+        overallComplianceScore = sum / (Model.Groups.Sum(x => x.Gaps.Count) + Model.Gaps.Count);
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gap analysis - @Model.MatrixName</title>
+
+
+
+    <script src="/lib/jquery/dist/jquery.js"></script>
+    <script src="/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="/lib/jquery.fancytree/dist/jquery.fancytree-all.js" type="text/javascript"></script>
+    <script src="/js/Shared/SkillTree.js"></script>
+
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+    <link href="/lib/jquery.fancytree/dist/skin-bootstrap/ui.fancytree.css" rel="stylesheet" type="text/css" class="skinswitcher">
+</head>
+
+<body>
+    <style>
+        #skillTreeEmployeePositionGaps > tbody td:nth-child(5) {
+            text-align: center;
+        }
+
+        #skillTreeEmployeePositionGaps > thead th:nth-child(5) {
+            text-align: center;
+        }
+    </style>
+
+    <div class="container-fluid">
+        <div class="pull-left" role="group">
+            <h4>@Model.MatrixName</h4>
+        </div>
+        <div class="pull-left" role="group" style="padding-left: 12px">
+            <h4 id="compliance-score">0</h4>
+        </div>
+        <div id="gapsContainer">
+            <div class="row">
+                <div class="col-lg-12" style="padding: 2px">
+                    <div class="well" style="padding: 0px">
+                        <table id="skillTreeEmployeePositionGaps" class="table table-condensed table-striped table-hover">
+                            <colgroup>
+                                <col width="*" />
+                                <col width="*" />
+                                <col width="*" />
+                                <col width="*" />
+                                <col width="*" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Position Skills</th>
+                                    <th>Tag</th>
+                                    <th>Target Skill Level</th>
+                                    <th>Current Skill Level</th>
+                                    <th>Compliance Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <script>
+            $("#compliance-score").text("Overall Compliance Score - " + @overallComplianceScore + " of 100");
+            var gapsResult = parseGaps(@Html.Raw(ViewBag.Json));
+
+            initGapsSkillTree = function () {
+                $("#skillTreeEmployeePositionGaps")
+                .fancytree({
+                    extensions: ["glyph", "table"],
+
+                    glyph: glyph_opts,
+
+                    source: gapsResult,
+
+                    table:
+                        {
+                            indentation: 20,
+                            nodeColumnIdx: 0
+                        },
+
+                    postProcess: function (event, data) {
+                        var orgResponse = data.response;
+                        data.result = parseGaps(orgResponse);
+                    },
+
+                    renderColumns: function (event, data) {
+                        var node = data.node,
+                            $tdList = $(node.tr).find(">td");
+
+                        if (node.folder) {
+                            var model = data.node.data;
+                            $tdList.eq(1).text(model.groupType);
+                        }
+                        else {
+                            var model = data.node.data.model;
+
+                            if (model.PositionSkill) {
+                                $tdList.eq(2).text(model.PositionSkill.SkillLevel.Name);
+                            }
+                            if (model.EmployeeSkill) {
+                                $tdList.eq(3).text(model.EmployeeSkill.SkillLevel.Name);
+                            }
+
+                            var backgroundColor = '';
+                            if (model.Score == 0) {
+                                backgroundColor = '#F08080';
+                            }
+                            if (model.Score > 100) {
+                                var icon = "<i class='glyphicon glyphicon-star' style='color:yellow; float: right; padding-right: 15px'></i>";
+                                backgroundColor = '#90EE90';
+                                $tdList.eq(3).append(icon);
+                                model.Score = 100;
+                            }
+                            if (model.Score == 100) {
+                                backgroundColor = '#90EE90';
+                            }
+                            if (model.Score > 0 && model.Score < 100) {
+                                backgroundColor = '#FFFACD';
+                            }
+                            $tdList.eq(3).css('background-color', backgroundColor);
+                            $tdList.eq(4).css('background-color', backgroundColor);
+
+                            $tdList.eq(4).text(model.Score + " of 100");
+                        }
+                    }
+                });
+            }
+
+            function parseGaps(gapsGroups) {
+                var children = [];
+                $.each(gapsGroups.Groups, function () {
+                    children.push(parseSkillGroup(this));
+                });
+                $.each(gapsGroups.Gaps, function () {
+                    children.push(parseSkillGap(this));
+                });
+                return children;
+            }
+
+            function parseSkillGroup(category) {
+                var lazy = false;
+                var subGroups = category.ChildGroups;
+                var gaps = category.Gaps;
+                return {
+                    title: category.Name,
+                    groupType: category.GroupType.Name,
+                    expanded: category.parentId == undefined,
+                    folder: true,
+                    lazy: lazy,
+                    model: category,
+                    children: ((subGroups !== undefined && subGroups != null && subGroups.length) ? parseGapsGroupsList(subGroups) : []).concat(((gaps !== undefined && gaps != null && gaps.length) ? parseGapsList(gaps) : []))
+
+                }
+            }
+
+            function parseGapsGroupsList(groups) {
+                var children = [];
+                $.each(groups, function () {
+                    children.push(parseSkillGroup(this));
+                });
+                return children;
+            }
+
+            function parseGapsList(gaps) {
+                var children = [];
+                $.each(gaps, function () {
+                    children.push(parseSkillGap(this));
+                });
+                return children;
+            }
+
+            function parseSkillGap(skillGap) {
+                return {
+                    title: skillGap.PositionSkill.Skill.Name,
+                    score: skillGap.Score,
+                    folder: false,
+                    model: skillGap,
+                    isLeaf: true,
+                    children: null
+                }
+            }
+
+            initGapsSkillTree();
+
+            $(function () {
+                window.print();
+                setTimeout(function () {
+                    window.close();
+                }, 500);
+            });
+        </script>
+</body>
+</html>

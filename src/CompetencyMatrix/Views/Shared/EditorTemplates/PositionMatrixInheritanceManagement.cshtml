@@ -1,0 +1,57 @@
+﻿@model CompetencyMatrix.ViewModels.PositionMatrixInheritanceManagementViewModel
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">Manage Inheritance of @Model.CurrentMatrix.Name</h4>
+            <input asp-for="@Model.CurrentMatrix.Id"/>
+            <input type="hidden" asp-for="@Model.CurrentMatrix.Name"/>
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+        <div class="modal-body">
+            <div class="row like-table-row">
+                <div class="col-md-5">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">All Matrixes</div>
+                        <div class="panel-body matrix-list">
+                            <ul class="list-group" id="matrixesCanBeAddedToParent">
+                                @for (var index = 0; index < Model.MatrixesCanBeAddedToParent.Count; index++)
+                                {
+                                    @Html.EditorFor(m => m.MatrixesCanBeAddedToParent[index])
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 middle-vertical-align">
+                    <button id="addParentPositionMatrix" class="btn btn-default btn-block btn-management">Add</button>
+                    <button id="removeParentPositionMatrix" class="btn btn-default btn-block btn-management">Remove</button>
+                </div>
+                <div class="col-md-5">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Parent Matrixes</div>
+                        <div class="panel-body matrix-list">
+                            <ul class="list-group" id="parentMatrixes">
+                                @for (var index = 0; index < Model.ParentMatrixes.Count; index++)
+                                {
+                                    @Html.EditorFor(m => m.ParentMatrixes[index])
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="updateParentMatrixes">Done</button>
+        </div>
+    </div>
+</div>
+<script src="~/js/Home/PositionMatrixInheritanceManagement.js"></script>
+<script>
+    var PositionMatrixInheritanceManagement = PositionMatrixInheritanceManagement || {};
+    PositionMatrixInheritanceManagement.urlSetParentMatrixes = "@Url.Action("SetParentMatrixes", "PositionMatrix")";
+</script>

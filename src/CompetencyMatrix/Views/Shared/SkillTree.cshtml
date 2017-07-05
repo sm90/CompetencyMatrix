@@ -1,0 +1,201 @@
+﻿@using System.Security.Claims
+@using System.Threading.Tasks
+
+<style type="text/css">
+    /* Define custom width and alignment of table columns */
+    #treetable {
+        table-layout: fixed;
+    }
+
+        #treetable tr td:nth-of-type(1) {
+            text-align: center;
+        }
+
+        #treetable tr td:nth-of-type(2) {
+            text-align: left;
+        }
+
+        #treetable tr td:nth-of-type(3) {
+            min-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+</style>
+
+
+@*<div class="alert alert-success alert-dismissible fade in" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <ul>
+            <li>Shift+click or F2 to in-place rename node</li>
+            <li>Drag nodes to reparent them</li>
+            <li>Hold CTRL while dragging to copy nodes (recursively!)</li>
+        </ul>
+    </div>*@
+
+<div class="well" style="overflow: auto;" id="idSkillContainer">
+    <div class="btn-toolbar">
+        @{
+            if (Context.User.IsInRole("Admin") || Context.User.IsInRole("EM"))
+            {
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default" onclick="addNewSkill()" title="Add new skill" disabled="disabled" id="skillTree_btnAddSkill">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Skill
+                    </button>
+                    <button type="button" class="btn btn-default" onclick="addNewCategory()" title="Add new category" disabled="disabled" id="skillTree_btnAddSkillCategory">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Category
+                    </button>
+                    <button type="button" class="btn btn-default" onclick="removeSkillOrCategory()" title="Remove skill or category" disabled="disabled" id="skillTree_btnRemoveSkillOrCategory">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Remove
+                    </button>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="input-group">
+        <input style="margin-bottom: 8px; margin-top: 8px" type="text" class="form-control" placeholder="Search" title="Search skill tree" id="skillTree_txtSearch" />
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" title="Clear search" id="skillTree_clearSearch">
+                <span class="glyphicon glyphicon-remove-circle"></span>
+            </button>
+        </span>
+    </div>
+
+    <table id="skilltree" class="table table-condensed table-striped table-hover">
+        <colgroup>
+            <col width="0px" />
+            <col width="*" />
+            <col width="30px" style="align-content: center" />
+        </colgroup>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var currentSkillTreeItem = {};
+    $(document).ready(function () {
+        $(window).resize(function () {
+            makescrollTree();
+        }).resize();
+    });
+
+    function makescrollTree() {
+        var bottom = getLayoutFooter().position();
+        var top = $('#skilltree').position();
+        var diff = bottom.top - top.top;
+        var val = diff.toString() + 'px';
+        $('#idSkillContainer').css('max-height', val);
+    }
+
+    initSkillEditorTree();
+
+    $("#skilltree").bind("fancytreeactivate", function (event, data) {
+        $("#skillTree_btnRemoveSkillOrCategory").removeAttr("disabled");
+        currentSkillTreeItem = { 'isFolder': data.node.isFolder(), 'id': data.node.data.model.id, name: data.node.data.model.name };
+        if (data.node.isFolder()) {
+            $("#skillTree_btnAddSkill").removeAttr("disabled");
+            $("#skillTree_btnAddSkillCategory").removeAttr("disabled");
+
+            $("#detailsView")
+				.load("@Url.Action("GetSkillCategoryDetailsView", "SkillCategory")",
+					{ id: data.node.data.model.id },
+					function (response, status, xhr) {
+					    //if (status == "error")
+					    //{
+					    //	alert("An error occurred while loading the results.");
+					    //}
+					});
+        }
+        else {
+            $("#skillTree_btnAddSkill").attr("disabled", "disabled");
+            $("#skillTree_btnAddSkillCategory").attr("disabled", "disabled");
+
+            $("#detailsView")
+				.load("@Url.Action("GetSkillDetailsView", "Skill")",
+					{ id: data.node.data.model.id },
+					function (response, status, xhr) {
+					});
+        }
+    });
+
+    function expandAll() {
+        $("#skilltree")
+			.fancytree("getRootNode")
+			.visit(function (node) {
+			    node.setExpanded(true);
+			});
+    }
+
+    function collapseAll() {
+        $("#skilltree")
+			.fancytree("getRootNode")
+			.visit(function (node) {
+			    node.setExpanded(false);
+			});
+    }
+
+    function addNewSkill() {
+        var node = $("#skilltree").fancytree("getActiveNode");
+        if (node != null && node.folder) {
+            node.editCreateNode("child", "");
+        }
+    }
+
+    function addNewCategory() {
+        var node = $("#skilltree").fancytree("getActiveNode");
+        if (node != null && node.folder) {
+            node.editCreateNode("child", { title: "", folder: true });
+        }
+    }
+
+    function removeSkillOrCategory() {
+        var url;
+        var postBody;
+        if (currentSkillTreeItem.isFolder)
+            url = "../api/SkillCategory/";
+        else
+            url = "../api/Skill/";
+
+        var message;
+        if (currentSkillTreeItem.isFolder)
+            message = "You are about to delete \"" + currentSkillTreeItem.name + "\" category. Delete?";
+        else
+            message = "You are about to delete \"" + currentSkillTreeItem.name + "\" skill. Delete?";
+
+        showConfirm("Delete confirmation", message,
+            function () {
+                $.ajax({
+                    url: url + currentSkillTreeItem.id,
+                    dataType: "json",
+                    type: "DELETE",
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (result) {
+                        if (result.deleted) {
+                            $("#skilltree").fancytree("getActiveNode").remove();
+                            $("#detailsView").empty();
+                        }
+                        else {
+                            var message = result.error + '<br>';
+                            if (result.usingItemsList) {
+                                var empsArr = result.usingItemsList;
+                                empsArr.forEach(function (item, i, empsArr) {
+                                    message += item + "<br>";
+                                });
+                            }
+                            showAlert('Warning', message, null, null);
+                        }
+                    },
+                });
+            });
+    }
+</script>

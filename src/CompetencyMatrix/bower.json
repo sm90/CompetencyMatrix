@@ -1,0 +1,15 @@
+{
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "3.3.6",
+    "jquery-validation": "1.15.0",
+    "jquery-ui": "1.11.4",
+    "jquery.fancytree": "fancytree#~2.19.0",
+    "jquery-ajax-unobtrusive": "^3.2.4",
+    "jquery-validation-unobtrusive": "^3.2.6",
+    "x-editable": "^1.5.1",
+    "jquery-serialize-object": "^2.5.0",
+    "eonasdan-bootstrap-datetimepicker": "4.17.37"
+  }
+}

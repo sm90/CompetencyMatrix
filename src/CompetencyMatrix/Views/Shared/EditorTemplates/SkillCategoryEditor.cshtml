@@ -1,0 +1,88 @@
+﻿@model CompetencyMatrix.ViewModels.SkillCategoryEditorViewModel
+
+@{
+    if (Model.IsEditable)
+    {
+
+        <div class="well well-sm" style="margin-bottom: 5px">
+            @await Html.PartialAsync("BreadCrumbs", Model.Breadcrumbs)
+        </div>
+    }
+}
+
+
+<div class="well">
+
+    <form asp-controller="SkillCategory" asp-action="SaveSkillCategoryDetails" method="post" role="form" data-ajax="true" data-ajax-method="POST">
+
+        <div class="tab-content panel" id="GeneralArea" style="background-color:inherit">
+            <div>
+                @Html.HiddenFor(m => m.Id)
+
+                <div class="form-group">
+                    <label asp-for="@Model.Name"></label>
+                    <input asp-for="@Model.Name" class="form-control" />
+                </div>
+                @{if (Model.IsEditable)
+                    {
+                        <div class="form-group">
+                            <label asp-for="@Model.Description"></label>
+                            <textarea asp-for="@Model.Description" class="form-control" rows="6"></textarea>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label asp-for="@Model.Description"></label>
+                            <textarea asp-for="@Model.Description" class="form-control" rows="3"></textarea>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        @{
+            if (Model.IsEditable)
+            {
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group pull-right" role="group" aria-label="...">
+                        <button type="submit" class="btn btn-default pull-right" title="Save changes" id="saveCategoryChanges">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                            Save
+                        </button>
+                        <button class="btn btn-default pull-right" title="Cancel changes" id="cancelCategoryChanges">
+                            <span class="glyphicon glyphicon-refresh"></span>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+    </form>
+</div>
+
+<script>
+
+    $("#cancelCategoryChanges")
+		.click(
+			function ()
+			{
+			    $("#detailsView")
+						.load("@Url.Action("GetSkillCategoryDetailsView", "SkillCategory")",
+							{ id: @Model.Id },
+							function(response, status, xhr)
+							{
+							});
+			});
+
+    $("#saveCategoryChanges")
+		.click(
+			function()
+			{
+			    var nameInput = $("#GeneralArea input[id=Name]");
+			    var newName = nameInput.val();
+			    var modelId = @Model.Id;
+
+			    renameSkillCategoryNode(modelId, newName);
+			});
+
+</script>

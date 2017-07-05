@@ -1,0 +1,51 @@
+@using CompetencyMatrix.ViewModels
+@model MailTemplate
+
+
+@{
+    Layout = null;
+}
+
+
+<div style="">
+    <form asp-action="UpdateTemplate" id="updateTemplateForm">
+
+        @Html.HiddenFor(a => a.Type)
+        @Html.HiddenFor(a => a.Id)
+
+        <div class="form-horizontal">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Subject" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Subject" class="form-control" />
+                    <span asp-validation-for="Subject" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Body" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <textarea asp-for="Body" class="form-control" rows="15" >@Model.Body</textarea>
+                    <span asp-validation-for="Body" class="text-danger"></span>
+                </div>
+            </div>
+
+            @{
+            Html.RenderPartial("Controls/ButtonPanel", new ButtonPanelModel()
+            {
+                Css = "modal-footer",
+                Buttons = new List<ButtonModel>() {
+                        new ButtonModel { Name="Cancel", DataTarget="editMailTemplateDlg", OnClick="onBtnCancelClick();return false;", Type=ButtonType.Cancel, Id="btnCancel" },
+                        new ButtonModel { Name="Save", Type=ButtonType.Save, Id="btnSave" }
+                    }
+            });
+            }
+
+            <script>
+            $.validator.unobtrusive.parse("#updateTemplateForm");
+            </script>
+        </div>
+    </form>
+</div>
+

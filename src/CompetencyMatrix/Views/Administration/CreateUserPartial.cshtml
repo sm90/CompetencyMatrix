@@ -1,0 +1,83 @@
+﻿@model CompetencyMatrix.ViewModels.Administration.EditUserViewModel
+
+<form id="createUserForm">
+    <div class="form-horizontal">
+        <br />
+        <div class="text-danger" id="createUserErrors" style="margin-bottom:4px"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label asp-for="UserName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Password" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PhoneNumber" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="EmployeeId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select class="form-control" asp-for="EmployeeId" asp-items="@(new SelectList(ViewBag.Employees, "Id", "Name"))">
+                    <option value="">None</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RoleId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select class="form-control" asp-for="RoleId" asp-items="@(new SelectList(ViewBag.Roles, "Id", "Name"))">
+                    <option value="">None</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $("#createUserForm").submit(function (e) {
+        var url = "/Administration/CreateUser/";
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $("#createUserForm").serialize(),
+            success: function (data) {
+                $("#createUserErrors").empty();
+                if (data.errors.length > 0) {
+                    $.each(data.errors, function (index, value) {
+                        $("#createUserErrors").append($("<div></div>").text(value.description));
+                    });
+                }
+                else {
+                    location.reload();
+                }
+            }
+        });
+
+        e.preventDefault();
+    });
+</script>

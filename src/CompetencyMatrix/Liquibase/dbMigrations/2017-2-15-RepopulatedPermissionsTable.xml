@@ -1,0 +1,95 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+  <changeSet author="a.rudenko" id="1487159010844-1" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <addColumn tableName="Permission">
+      <column name="Description" type="nvarchar(1024)" />
+    </addColumn>
+    
+    <sql splitStatements="false">
+      DECLARE @RoleID varchar(100),
+      @ViewOwnMatrix int,
+      @ViewPublicMatrix int,
+      @ViewAnyMatrix int,
+      @ModifyOwnMatrix int,
+      @ModifyAnyMatrix int,
+      @ViewOwnProfile int,
+      @ViewSubordinateProfile int,
+      @ViewLocationProfile int,
+      @ViewAnyProfile int,
+      @ModifyOwnProfile int,
+      @ModifyAnyProfile int;
+
+
+      DELETE FROM PermissionOnRole;
+      DELETE FROM Permission;
+
+      INSERT INTO Permission (Name, Description) VALUES ('ViewOwnMatrix', 'View own Competency Matrix');
+      SET @ViewOwnMatrix = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ViewPublicMatrix', 'View any public Competency Matrix');
+      SET @ViewPublicMatrix = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ViewAnyMatrix', 'View any Competency Matrix');
+      SET @ViewAnyMatrix = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ModifyOwnMatrix', 'Add/Edit/Delete own Competency Matrix');
+      SET @ModifyOwnMatrix = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ModifyAnyMatrix', 'Add/Edit/Delete any Competency Matrix');
+      SET @ModifyAnyMatrix = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ViewOwnProfile', 'View own profile and skills');
+      SET @ViewOwnProfile = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ViewSubordinateProfile', 'View profile and skills of all subordinates');
+      SET @ViewSubordinateProfile = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ViewLocationProfile', 'View profile and skills of all empolyees of one''s location');
+      SET @ViewLocationProfile = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ViewAnyProfile', 'View any profile and skills');
+      SET @ViewAnyProfile = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ModifyOwnProfile', 'Add/Edit/Delete own skills');
+      SET @ModifyOwnProfile = SCOPE_IDENTITY();
+      INSERT INTO Permission (Name, Description) VALUES ('ModifyAnyProfile', 'Add/Edit/Delete any skill');
+      SET @ModifyAnyProfile = SCOPE_IDENTITY();
+
+      SELECT @RoleID = Id FROM AspNetRoles WHERE NormalizedName = 'ADMIN'
+
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewOwnMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewPublicMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewAnyMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyOwnMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyAnyMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewOwnProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewSubordinateProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewLocationProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewAnyProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyOwnProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyAnyProfile, 1)
+
+      SELECT @RoleID = Id FROM AspNetRoles WHERE NormalizedName = 'MANAGER'
+
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewOwnMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewPublicMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyOwnMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewOwnProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewSubordinateProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyOwnProfile, 1)
+
+      SELECT @RoleID = Id FROM AspNetRoles WHERE NormalizedName = 'HR'
+
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewOwnMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewPublicMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyOwnMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewOwnProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewLocationProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyOwnProfile, 1)
+
+      SELECT @RoleID = Id FROM AspNetRoles WHERE NormalizedName = 'EMPLOYEE'
+
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewOwnMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewPublicMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyOwnMatrix, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ViewOwnProfile, 1)
+      INSERT INTO PermissionOnRole (RoleID, PermissionID, IsActive) VALUES (@RoleID, @ModifyOwnProfile, 1)
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>

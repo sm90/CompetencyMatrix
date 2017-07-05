@@ -1,0 +1,111 @@
+﻿<style>
+        span.ws-wrap span.fancytree-title {
+            white-space: normal;
+        }
+
+        span.ws-nowrap span.fancytree-title {
+            white-space: nowrap;
+        }
+
+        span.ws-pre span.fancytree-title {
+            white-space: pre;
+        }
+</style>
+
+
+<table id="employeePastProjectTree" class="table table-condensed table-striped table-hover">
+    <colgroup class="row">
+        <col />
+        <col width="100" />
+        <col width="100" />
+        <col width="100" />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+
+    </colgroup>
+    <thead class="row" style="background-color: darkgray">
+    <tr>
+        <th></th>
+        <th>Company</th>
+        <th>Work Period</th>
+        <th>Project</th>
+        <th>Project Description</th>
+        <th>Role</th>
+        <th>Technologies</th>
+        <th>Tools</th>
+         <th>Team</th>
+         <th></th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    initEmployeesPastProjectTree();
+    var tree = $("#employeePastProjectTree").fancytree("getTree");
+    var id = $("#employeeStoredId").val();
+    var pathforLoadEmployeePastProjectTree = "@Url.Action("GetPastProjectRoot", "Employees")" + "?id=" + id;
+    tree.reload({ url: pathforLoadEmployeePastProjectTree })
+        .done(function (event) {
+        });
+
+    function pastProjectEdit() {
+        $("#employeePastProjectModalId").draggable({
+            handle: ".modal-header"
+        });
+        if ($('#btnEditPastProject').hasClass('disabled'))
+            return;
+
+        var prId = 0;
+        var tree = $("#employeePastProjectTree").fancytree("getTree");
+        if (tree.getSelectedNodes().length == 1) {
+            //edit
+            var node = tree.getSelectedNodes()[0];
+            prId = node.data.employeePastProjectId;
+        }
+        
+        var urlForLoadPastProject = $('#btnEditPastProject').data('url').slice(0, -1) + prId;
+        $.get(urlForLoadPastProject, function (data) {
+            $('#modalContent').html(data);
+            $('#employeePastProjectModalId').modal('show');
+        });
+    }
+
+    function pastProjectEmploeeSubmit() {
+        // datetimepicker return date in moment format. So, its need convert to the Date 
+        var i = $('#datetimepickerWorkPeriodStart').data("DateTimePicker").date().toDate().toISOString();
+        $('#WorkPeriodStart').val(i);
+        var i = $('#datetimepickerWorkPeriodEnd').data("DateTimePicker").date().toDate().toISOString();
+        $('#WorkPeriodEnd').val(i);
+    }
+
+    function pastProjectEditSuccessfullyComplete(e) {
+        if (e.result == true)
+        {
+            $('#employeePastProjectModalId').modal('hide');
+            var tree = $("#employeePastProjectTree").fancytree("getTree");
+            var pathforLoadEmployeePastProjectTree = "@Url.Action("GetPastProjectRoot", "Employees")" + "?id=" + id;
+            tree.reload({ url: pathforLoadEmployeePastProjectTree })
+                .done(function (event) {
+                });
+        }
+    }
+
+</script>

@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3DF19198-E655-48BC-8428-0B8A21CD9603}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A90D1423-AE85-4350-846E-555378F6F682}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CompetencyMatrix", "src\CompetencyMatrix\CompetencyMatrix.xproj", "{C586C8A6-F669-4CFC-871A-0F2AB9BDB1EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Liquibase", "Liquibase", "{95BADF22-8B78-45CE-9484-D0B7EAC77641}"
+	ProjectSection(SolutionItems) = preProject
+		src\CompetencyMatrix\Liquibase\liquibase.bat = src\CompetencyMatrix\Liquibase\liquibase.bat
+		src\CompetencyMatrix\Liquibase\Liquibase.properties = src\CompetencyMatrix\Liquibase\Liquibase.properties
+		src\CompetencyMatrix\Liquibase\liquibase.spec = src\CompetencyMatrix\Liquibase\liquibase.spec
+		src\CompetencyMatrix\Liquibase\update.bat = src\CompetencyMatrix\Liquibase\update.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dbMigrations", "dbMigrations", "{BF39B02C-6026-405A-834E-28A57D811F13}"
+	ProjectSection(SolutionItems) = preProject
+		src\CompetencyMatrix\Liquibase\dbMigrations\changePastProjectEndDate.xml = src\CompetencyMatrix\Liquibase\dbMigrations\changePastProjectEndDate.xml
+		src\CompetencyMatrix\Liquibase\dbMigrations\update.xml = src\CompetencyMatrix\Liquibase\dbMigrations\update.xml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C586C8A6-F669-4CFC-871A-0F2AB9BDB1EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C586C8A6-F669-4CFC-871A-0F2AB9BDB1EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C586C8A6-F669-4CFC-871A-0F2AB9BDB1EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C586C8A6-F669-4CFC-871A-0F2AB9BDB1EB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C586C8A6-F669-4CFC-871A-0F2AB9BDB1EB} = {3DF19198-E655-48BC-8428-0B8A21CD9603}
+		{95BADF22-8B78-45CE-9484-D0B7EAC77641} = {A90D1423-AE85-4350-846E-555378F6F682}
+		{BF39B02C-6026-405A-834E-28A57D811F13} = {95BADF22-8B78-45CE-9484-D0B7EAC77641}
+	EndGlobalSection
+EndGlobal

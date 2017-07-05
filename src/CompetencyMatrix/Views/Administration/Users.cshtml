@@ -1,0 +1,119 @@
+﻿@model IEnumerable<CompetencyMatrix.Models.AspNetUsers>
+@{
+    Layout = "~/Views/Administration/_AdminLayout.cshtml";
+}
+
+<style>
+    #usersList {
+        padding: 0px 0px;
+        margin: 10px 0px;
+    }
+    #usersList li {
+    list-style-type: none;
+}
+</style>
+
+<div class="row">
+    <div class="col-md-4">
+        <div>
+            <h4>Users list <span><small>Total users: @Model.Count()</small></span></h4>
+            <hr />
+            <button type="button" class="btn btn-default btn-lg btn-block" data-toggle="modal" @*id="createUserDialog"*@ data-target="#createUserDialog">Create user</button>
+
+            <div class="input-group" style="margin: 8px 0px">
+                <input type="text" class="form-control" placeholder="Search" title="Search users" id="usersListSearch" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" title="Clear search" id="usersListClearSearch">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                    </button>
+                </span>
+            </div>
+            <ul id="usersList" class="list-group">
+                @foreach (var user in Model)
+                {
+                    <li class="list-group-item" data-value="@user.Id">@user.UserName</li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div id="userDetails">
+
+        </div>
+    </div>
+</div>
+<div id="createUserDialog" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create user</h4>
+            </div>
+            <div class="modal-body" id="createUserDetailsArea">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        activateAdminMenItem("#adminUsersMenuitem");
+
+        $("#usersList li").click(function () {
+            $("#usersList > li").removeClass("active");
+            $(this).addClass('active');
+
+            var userId = $(this).data('value');
+
+            $.ajax({
+                url: '/Administration/EditUser/' + userId,
+                type: "GET",
+                success: function (result, status) {
+                    if (status != "error") {
+                        $("#userDetails").html(result);
+                    }
+                }
+            });
+        });
+
+    })
+
+    var list = $("#usersList");
+
+    $('#usersListSearch')
+        .keyup(function (e) {
+            var match = $(this).val().toLocaleLowerCase();
+
+            if (e && e.which === $.ui.keyCode.ESCAPE || $.trim(match) === "") {
+                $("button#usersListClearSearch").click();
+                return;
+            }
+            list.children('li').each(function () {
+                var text = $(this).text().toLocaleLowerCase();
+                (text.indexOf(match) >= 0) ? $(this).show() : $(this).hide();
+            });
+        });
+
+    $("#usersListClearSearch")
+          .click(function (e) {
+              $("#usersListSearch").val("");
+              list.children('li').each(function () { $(this).show() });
+          });
+
+    $("#createUserDialog")
+        .on('show.bs.modal',
+            function () {
+
+                var url = '/Administration/CreateUser/';
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (result, status) {
+                        if (status != "error") {
+                            $("#createUserDetailsArea").html(result);
+                        }
+                    }
+                });
+            });
+</script>

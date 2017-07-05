@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+  <!--PV_PHONES-->
+  <changeSet author="pa" id="10">
+    <createTable schemaName="dbo" tableName="PV_PHONES">
+      <column name="ID" type="int" autoIncrement="true">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PV_PHONES"/>
+      </column>
+      <column name="PHONE" type="varchar(20)">
+        <constraints nullable="false" />
+      </column>
+      <column name="COMMENT" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+    </createTable>
+    <rollback>
+      <dropTable schemaName="dbo" tableName="PV_PHONES"/>
+    </rollback>
+  </changeSet>
+  <changeSet author="pa" id="20">
+  	<dropTable schemaName="dbo" tableName="PV_PHONES"/>
+  </changeSet>
+</databaseChangeLog>

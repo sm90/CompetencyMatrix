@@ -1,0 +1,118 @@
+﻿@model CompetencyMatrix.ViewModels.SkillEvaluationModelViewModel
+
+<div class="well skillEvaluationModelEditor" skillEvaluationModelId="@Model.Id">
+
+	<div>
+		@Html.HiddenFor(m => m.Id, new
+   {
+	   @id = "currentEvaluationModelId"
+   })
+
+		<div class="form-group">
+			<label asp-for="@Model.Name"></label>
+			<input asp-for="@Model.Name" class="form-control EvaluationModelName" />
+            <span asp-validation-for="@Model.Name" class="text-danger"></span>
+		</div>
+		<div class="form-group">
+			<label asp-for="@Model.Description"></label>
+			<textarea asp-for="@Model.Description" class="form-control" rows="3"></textarea>
+		</div>
+	</div>
+
+	<input type="hidden" id="Index" name="Index" Value="@ViewData["index"]" />
+	@Html.HiddenFor(m => m.CurrentLevel.Id, new { @class = "currentLevelId" })
+	@Html.HiddenFor(m => m.CurrentLevel.Quality, new { @class = "currentLevelQuality" })
+
+	<label asp-for="@Model.Description">Skill levels (use drag and drop to change level order)</label>
+
+	<ul style="list-style-type: none; margin: 0; padding: 0" class="listOfLevels">
+
+		@for (int i = 0; i < Model.Levels.Count; i++)
+			{
+			<li class="levelRow">
+				<div class="form-group">
+					@Html.Hidden("Levels.Index", i)
+					@Html.HiddenFor(m => m.Levels[i].Id, new { @class = "LevelId" })
+					@Html.HiddenFor(m => m.Levels[i].Name, new { @class = "LevelHiddenName" })
+					@Html.HiddenFor(m => m.Levels[i].Description)
+					@Html.HiddenFor(m => m.Levels[i].Quality, new { @class = "LevelQuality" })
+					@{
+						var levelNameHiddenId = Html.IdFor(m => m.Levels[i].Name);
+						var levelNameLabelId = string.Format("{0}_lbl", Html.IdFor(m => m.Levels[i].Name));
+					}
+
+					<div class="input-group">
+						<span class="input-group-addon" style="cursor: move">
+							<span class="glyphicon glyphicon-menu-hamburger" style="cursor: move"></span>
+							<environment names="Development">
+								<span class="LevelQualityTest">@Model.Levels[i].Quality.ToString()</span>
+							</environment>
+						</span>
+						<div class="form-control">
+							<label id="@levelNameLabelId" class="LevelName">@Model.Levels[i].Name</label>
+						</div>
+						<span class="input-group-btn">
+							@*<button title="Edit" type="button" class="btn btn-default btnEditLevel">
+									<span class="glyphicon glyphicon-edit"></span>
+								</button>*@
+							<button title="Add level" type="button" class="btn btn-default btn-transparent btnAddEvaluationModelLevel" style="border: none; color: black">
+								<span class="glyphicon glyphicon-plus-sign"></span>
+							</button>
+							<button title="Delete level" type="button" class="btn btn-default btn-transparent" style="border: none; color: black" onclick="javascript: $(this).closest('.levelRow').remove()">
+								<span class="glyphicon glyphicon-minus-sign"></span>
+							</button>
+						</span>
+						@*<label class="input-group-addon" id="@levelNameLabelId" data-type="text">@Html.DisplayFor(m => m.Levels[i].Name)</label>*@
+					</div>
+
+					<script>
+						$(function ()
+						{
+							$("#@levelNameLabelId")
+								.editable(
+									{
+										title: "Change name",
+										success: function (response, newValue)
+										{
+											$("#@levelNameHiddenId").val(newValue);
+											updateSkillEvaluationModelsEditorListBox();
+										}
+									});
+						});
+					</script>
+
+					@if (Model.Levels[i].Id < 0)
+					{
+					<script>
+						$(function ()
+						{
+							$("#@levelNameLabelId")
+								.editable("show");
+						});
+					</script>
+					}
+
+				</div>
+			</li>
+			}
+	</ul>
+
+	<div class="btn-toolbar" role="toolbar">
+		<div class="btn-group" role="group" aria-label="...">
+			<button type="button" class="btn btn-default btnAddEvaluationModelLevel" title="Add level" id="AddNewLevel">
+				<span class="glyphicon glyphicon-plus"></span>
+				Add level
+			</button>
+		</div>
+	</div>
+
+	<script>
+
+		var _SkillEvaluationModel_AddLevel = "@Url.Action("AddLevel", "SkillEvaluationModel")";
+
+		$(function ()
+		{
+			bindSkillEvaluationModelEditorEvents(@Model.Id);
+		});
+	</script>
+</div>

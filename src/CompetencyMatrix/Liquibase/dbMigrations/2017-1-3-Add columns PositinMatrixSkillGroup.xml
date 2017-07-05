@@ -1,0 +1,38 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+
+  <changeSet author="a.tsatsuyev (generated)" id="1483427763655-28" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <addColumn tableName="SkillGroupType">
+      <column name="IsDefault" type="bit" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+
+    <update  tableName="SkillGroupType">
+      <column name="IsDefault" value="1"/>
+      <where>id = 1</where>
+    </update>
+
+
+    <dropNotNullConstraint columnDataType="int" columnName="SkillGroupId" tableName="PositionMatrixSkill"/>
+
+    <addColumn tableName="PositionMatrixSkill">
+      <column name="SkillGroupTypeId" type="int"/>
+    </addColumn>
+
+    <addColumn tableName="PositionMatrixSkillGroup">
+      <column name="ParentGroupId" type="int"/>
+    </addColumn>
+
+
+
+  </changeSet>
+
+
+
+
+</databaseChangeLog>

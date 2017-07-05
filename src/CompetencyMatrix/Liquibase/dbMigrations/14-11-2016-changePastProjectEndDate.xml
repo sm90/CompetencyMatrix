@@ -1,0 +1,35 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+  <changeSet author="pa" id="200">
+    <addColumn tableName="EmployeePastProject" schemaName="dbo">
+      <column name="TEMPDATE" type="DateTime">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="pa" id="210">
+    <sql endDelimiter="\nGO" splitStatements="true" stripComments="true">
+      UPDATE EmployeePastProject SET TEMPDATE = WorkPeriodEnd
+    </sql>
+  </changeSet>
+  <changeSet author="pa" id="220">
+    <dropColumn tableName="EmployeePastProject" schemaName="dbo" columnName="WorkPeriodEnd"/>
+  </changeSet>
+  <changeSet author="pa" id="230">
+    <addColumn tableName="EmployeePastProject" schemaName="dbo">
+      <column name="WorkPeriodEnd" type="DateTime">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="pa" id="140">
+    <sql endDelimiter="\nGO" splitStatements="true" stripComments="true">
+      UPDATE EmployeePastProject SET WorkPeriodEnd = TEMPDATE
+    </sql>
+  </changeSet>
+  <changeSet author="pa" id="240">
+    <dropColumn tableName="EmployeePastProject" schemaName="dbo" columnName="TEMPDATE"/>
+  </changeSet>
+</databaseChangeLog>

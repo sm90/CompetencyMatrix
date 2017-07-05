@@ -1,0 +1,33 @@
+﻿
+<table id="employeeSkillTree" class="table table-condensed table-striped table-hover">
+    <colgroup class="row">
+        <col />
+        <col class="col-lg-4" />
+        <col class="col-lg-4" />
+        <col class="col-lg-4" />
+    </colgroup>
+    <thead class="row" style="background-color: darkgray">
+        <tr><th class="col-lg-4" style="padding-left: 15px;">Skill Name</th> <th class="col-lg-4" style="padding-left: 15px;">Level</th> <th class="col-lg-4" style="padding-left: 15px;">Last Used</th> <th> </th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<script>
+    initEmployeesSkillTree();
+    var tree = $("#employeeSkillTree").fancytree("getTree");
+    var id = $("#employeeStoredId").val();
+    var pathforLoadEmployeeTree = "@Url.Action("GetSkillsRoot", "Employees")" + "?id=" + id + '&isdndsuppport=false' + '&withLog=false';
+    tree.reload({
+        url: pathforLoadEmployeeTree
+    }).done(function () {
+
+    });
+</script>

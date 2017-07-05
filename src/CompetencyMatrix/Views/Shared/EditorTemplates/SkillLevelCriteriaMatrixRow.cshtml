@@ -1,0 +1,87 @@
+﻿@using CompetencyMatrix.Infrastructure
+@model CompetencyMatrix.ViewModels.SkillLevelCriteriaMatrixRow
+@inject IServerVariables variables
+
+@{
+    bool disable = true;
+}
+
+<tr title="@Html.ValueFor(m => m.SkillCriteria.SkillCriteriaDescription)">
+
+	@Html.HiddenFor(m => m.SkillCriteria.SkillCriteriaId)
+	@Html.HiddenFor(m => m.SkillCriteria.SkillCriteriaName)
+	@Html.HiddenFor(m => m.SkillCriteria.SkillCriteriaDescription)
+
+	<td>
+		@{
+			var criteriaNameHiddenId = Html.IdFor(m => m.SkillCriteria.SkillCriteriaName);
+			var criteriaNameLabelId = string.Format("{0}_lbl", Html.IdFor(m => m.SkillCriteria.SkillCriteriaName));
+		}
+
+		<label id="@criteriaNameLabelId" data-type="text">@Html.DisplayFor(m => m.SkillCriteria.SkillCriteriaName)</label>
+        @if (!disable)
+        {
+		<script>
+
+            $(function ()
+            {
+				$("#@criteriaNameLabelId")
+					.editable(
+						{
+                    title: "Change name",
+                    success: function (response, newValue)
+                {
+								$("#@criteriaNameHiddenId").val(newValue);
+                }
+                })
+             //}       
+			});
+		</script>
+        }
+		@if (Model.SkillCriteria.SkillCriteriaId == 0)
+			{
+			<script>
+				$(function ()
+				{
+					$("#@criteriaNameLabelId")
+						.editable("show");
+				});
+			</script>
+			}
+
+
+	</td>
+
+	@for (int i = 0; i < Model.Entries.Count; i++)
+	{
+		var isChecked = Model.Entries[i].Checked;
+
+		<td class="skillLevelCriteriaTableMatrixCell">
+			<div class="checkbox">
+				<label>
+					@Html.HiddenFor(s => s.Entries[i].SkillLevelModel.SkillLevelModelId)
+					@Html.HiddenFor(s => s.Entries[i].SkillCriteria.SkillCriteriaId)
+@if (disable)
+{
+    <input asp-for="Entries[i].Checked" disabled/>
+}
+else
+{
+    <input asp-for="Entries[i].Checked" />
+}
+					
+				</label>
+			</div>
+		</td>
+	}
+
+	<td>
+@if (!disable)
+{
+		<button type="button" class="btn btn-block" onclick="javascript:$(this).closest('tr').remove()">
+			<span class="glyphicon glyphicon-trash"></span>
+		</button>
+}
+	</td>
+
+</tr>

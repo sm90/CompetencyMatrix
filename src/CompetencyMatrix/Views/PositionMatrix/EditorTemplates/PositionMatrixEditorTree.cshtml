@@ -1,0 +1,580 @@
+﻿@using CompetencyMatrix.ViewModels
+@using CompetencyMatrix.Infrastructure
+@model CompetencyMatrix.ViewModels.PositionMatrixSkills
+
+@JavascriptExtension.IncludeVersionedJs(Html, "/js/Shared/EditorTemplates/PositionMatrixEditor.js")
+@JavascriptExtension.IncludeVersionedJs(Html, "/js/Shared/SkillTree.js")
+
+
+<style>
+    body {
+        overflow-y: hidden;
+    }
+</style>
+
+<div id="matrixEditorContainer">
+    <div class="cursorover">
+        <a href="javascript: void(0);" onclick="goBack()" class="navbar-link">
+            <span class="glyphicon glyphicon-circle-arrow-left"></span>
+            Back to list of Position matrixes
+        </a>
+    </div>
+
+    <div class="row header-row">
+
+        <div class="col-lg-4" id="searchContainer">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" title="Search matrix" id="editPositionMatrix_txtSearch">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" title="Clear search" id="editPositionMatrix_clearSearch">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <table width="100%">
+                <tr>
+                    <td colspan="2"><label id="lblMatrixName" style="margin-bottom:5px;" data-type="text">@Model.MatrixName</label></td>
+                </tr>
+                <tr>
+                    <td>
+                        @{Html.RenderPartial("Controls/ButtonPanel", new ButtonPanelModel()
+                        {
+                        Css = "pull-left",
+                        Buttons = new List<ButtonModel>
+                            () {
+                            //new ButtonModel { Name="Add Group", Type=ButtonType.Add, Id="btnAddGroup", DataTarget="positionMatrixAddGroupDialog" }
+                            new ButtonModel { Name="Add Group", Type=ButtonType.Add, Id="btnAddGroup", OnClick="createGroup()" }
+                            }
+                            });
+                            }
+                    </td>
+                    <td al>
+
+                        @{
+                        Html.RenderPartial("Controls/ButtonPanel", new ButtonPanelModel()
+                        {
+                        Css = "pull-right",
+                        Buttons = new List<ButtonModel>
+                            () {
+                            new ButtonModel { Name="Cancel", Type=ButtonType.Cancel, Id="btnCancel" },
+                            new ButtonModel { Name="Done",  Type=ButtonType.Save, Id="btnSave" }
+                            }
+                            });
+
+                            }
+
+                    </td>
+                </tr>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-4" style="padding: 2px;" id="skilltreePositionMatrixEditorContainer">
+            <!--<div style="overflow-y:auto;" id="editMatrixSkillTree">-->
+                <div class="well" id="editMatrixSkillTree" style="overflow-y:auto; margin-bottom: 0px">
+                    <table id="skilltreePositionMatrixEditor" class="table table-condensed table-striped table-hover">
+                        <colgroup>
+                            <col width="0px" />
+                            <col width="*" />
+                            <col width="30px" style="align-content: center" />
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <!--</div>-->
+        </div>
+        <div class="col-lg-8" style="padding: 2px" id="detailsViewContainer">
+            @{
+                if (User.IsInRole("Admin"))
+                {
+
+                    <div class="well" style="margin-bottom: 2px">
+
+                        <label>Access mode:&nbsp;</label>
+                        <label class="radio-inline">
+                            <input type="radio" asp-for="IsPublic" value="true" checked="@Model.IsPublic">
+                            Public
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" asp-for="IsPublic" value="false" checked="@(!Model.IsPublic)">
+                            Private
+                        </label>
+                    </div>
+
+                }
+            }
+            <div id="detailsView" class="well" style="padding: 0px">
+                <table id="skillTreePositionMatrixSkillsEditor" class="table table-condensed table-striped table-hover">
+                    <colgroup>
+                        <col width="*" />
+                        <col width="*" />
+                        <col width="*" />
+                        <col width="*" />
+                        <col width="*" />
+                        <col width="*" />
+                    </colgroup>
+                    <thead class="droppable-root-area">
+                        <tr>
+                            <th>Skill Name</th>
+                            <th>Inherited From</th>
+                            <th>Tag</th>
+                            <th>Level</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+<div id="positionMatrixAddGroupDialog" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" style="width: 500px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="addGroupTitle">Add group</h4>
+            </div>
+            <div class="modal-body" id="positionMatrixEditGroupArea">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    var positionMartix = @Html.Raw(Json.Serialize(Model));
+    var positionMatrixManager;
+    var getGroupUIUrl = '@Url.Action("PrepareMatrixSkillGroup", "PositionMatrix")';
+    var getUpdateUrl = '@Url.Action("Update", "PositionMatrix")';
+    var getUpdateGroupUrl = '@Url.Action("EditSkillGroup", "PositionMatrix")';
+
+    initSkillTree();
+
+    //--------
+    (function skillTreePositionMatrixSkillsEditor(){
+        var positionSkills = parseSkills(@Html.Raw(Json.Serialize(Model)));
+        var skillGroupTypes = @Html.Raw(Json.Serialize(ViewBag.SkillGroupTypes));
+        var skillLevels = @Html.Raw(Json.Serialize(ViewBag.SkillLevels));
+
+        initPositionMatrixSkillsTree = function () {
+            $("#skillTreePositionMatrixSkillsEditor")
+            .fancytree({
+                extensions: ["dnd", "glyph", "table"],
+
+                glyph: glyph_opts,
+
+                source: positionSkills,
+
+                dnd:
+                    {
+                        autoExpandMS: 400,
+                        focusOnClick: true,
+                        dragStart: function (node, data) {
+                            return true;
+                        },
+                        dragEnter: function (node, data) {
+                            return true;
+                        },
+                        dragDrop: function (node, data) {
+                            node.setExpanded(true)
+                                .always(function () {
+                                    // Wait until expand finished, then post the change and move node
+                                    
+                                    onNodeDropped(node, data);
+                                });
+                        }
+                    },
+                table:
+                    {
+                        indentation: 20,
+                        nodeColumnIdx: 0
+                    },
+
+                renderColumns: function (event, data) {
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+
+                    if (node.folder) {
+                        var model = data.node.data.model;
+
+                        $tdList.eq(1).text(htmlEncode(model.matrixName));
+
+                        var select = $('<select class="form-control" onchange="onSkillGroupChanged(this, SkillType.Category)"></select>').attr("modelid", model.id );
+                        $.each(skillGroupTypes, function(index, skillGroupType){
+                            var option = $("<option></option>").attr("value", skillGroupType.value).text(skillGroupType.text)
+                            if(model.groupTypeId == skillGroupType.value) {
+                                option.attr("selected","selected");
+                            }
+                            select.append(option);
+                        });                        
+
+                        $tdList.eq(2).html(select);
+
+                        $tdList.eq(4).html('<button type="button" class="btn btn-block" onclick="renameSkillGroup(' + model.id + ')"><span class="glyphicon glyphicon-edit"></span></button>');
+
+                        $tdList.eq(5).html('<button type="button" class="btn btn-block" onclick="removeSkillGroup(' + model.id + ')"><span class="glyphicon glyphicon-trash"></span></button>');
+                    }
+                    else {
+                        var model = data.node.data;
+
+                        $tdList.eq(1).text(htmlEncode(model.model.matrixName));
+
+                        var levels = skillLevels[model.model.evaluationModelId];
+                        var select = $('<select class="form-control" onchange="onSkillLevelChanged(this, SkillType.Skill)"></select>').attr("modelid", model.id ).attr("placeholder", "Choose");
+                        $.each(levels, function(index, skillLevel){
+                            var option = $("<option></option>").attr("value", skillLevel.value).text(skillLevel.text)
+                            if(model.model.skillLevelId == skillLevel.value) {
+                                option.attr("selected","selected");
+                            }
+                            select.append(option);
+                        });
+
+                        $tdList.eq(3).html(select);
+
+                        $tdList.eq(5).html('<button type="button" class="btn btn-block" onclick="removeSkill(' + model.id + ')"><span class="glyphicon glyphicon-trash"></span></button>');
+                    }
+
+                }
+            });
+        }
+
+        this.onNodeDropped = function(node, data){
+            var otherNode = data.otherNode || data,
+                entityId = otherNode.data.model.id,
+                newParentId = node ? node.data.model.id : null,
+                parentNode = node;
+                                    
+            if (node && !node.data.model.skills) {
+                parentNode = node.parent;
+            }
+
+            if(!otherNode.isFolder()){
+                var fixedOtherNode = parseDroppedNode(otherNode);
+
+                if(fixedOtherNode.data.model.matrixId) {
+                    //dragging inside matrix
+                    addSkill(fixedOtherNode, parentNode, true);
+                }
+                else {
+                    addSkill(fixedOtherNode, parentNode);
+                }
+            }
+        };
+
+        this.addSkill = function(nodeFrom, nodeTo, self) {
+            debugger;
+            data =
+                {
+                    id: nodeFrom.data.model.id,
+                    type: nodeFrom.data.isLeaf ? SkillType.Skill : SkillType.Category,
+                    matrixId: positionMartix.matrixId
+                },
+            parentId = null; //null means root group, below this value can be recalculated
+
+            if(self) {
+                //dragging inside matrix
+                data.id = nodeFrom.data.model.skillId;
+                positionMatrixManager.removeSkill(nodeFrom.data.model.id);
+            }
+            if (positionMatrixManager.skillExists(nodeFrom.data.model.id)) {
+                showAlert('Error', 'Sorry, this matrix already has such skill. You cannot add the same skill twice.');
+                return;
+            }
+
+            var targetId;
+            if(nodeTo) {
+                targetId = nodeTo.data.id;
+            }
+            else {
+                var rootNode = $("#skillTreePositionMatrixSkillsEditor").fancytree("getRootNode");
+                nodeTo = rootNode;
+            }
+
+            if (targetId) {
+                parentId = targetId;
+            }
+            else {
+                targetId = 'leaf';
+            }
+
+            data.parentId = parentId;
+
+            $.ajax({
+                url: getGroupUIUrl,
+                type: "POST",
+                data: data,
+                success: function (result, status) {
+
+                    if (status != "error") {
+
+                        if (!nodeFrom.data.isLeaf) {
+                            //Add list of skills to group
+                        }
+                        else {
+                            //visually add to tree
+                            var copyNodeFrom = jQuery.extend({}, nodeFrom);
+                            copyNodeFrom.data.id = copyNodeFrom.data.model.id = result.json.value.skills[0].id;
+                            copyNodeFrom.copyTo(nodeTo);
+
+                            if(self)
+                                nodeFrom.remove();
+
+                            nodeTo.setExpanded();
+                        }
+
+                        positionMatrixManager.addItem('group_' + targetId, result.json.value, nodeFrom.data.isLeaf);
+                    }
+                }
+            });
+
+            //hide span NoSkillsAdded, if present
+            $("#spanNoSkillsAdded").hide();
+        }
+
+        this.createGroup = function(group) {
+            var activeNode = $("#skillTreePositionMatrixSkillsEditor").fancytree("getActiveNode");
+
+            if(activeNode && !activeNode.isFolder()){
+                alert('Please select a group or nothing to create a root group.');
+                return;
+            }
+
+            if(group)
+                $('#addGroupTitle').text('Rename group');
+            else
+                $('#addGroupTitle').text('Add group');
+
+            $('#positionMatrixAddGroupDialog').modal();
+
+            var parentId = null;
+
+            if(activeNode)
+                parentId = activeNode.data.id;
+
+            var data;
+
+            if(group) {
+                data = {
+                    id: group.id,
+                    name: group.name,
+                    state: group.state
+                };
+            }
+            else {
+                data = {
+                    id: positionMatrixManager.getNewId(),
+                    name: 'New group',
+                    parentGroupId: parentId || null,
+                    state: CompetencyMatrix.EntityState.Added,
+                    matrixId: positionMatrixManager.matrix.matrixId
+                };
+            }
+
+            $.ajax({
+                url: getUpdateGroupUrl,
+                data: data,
+                type: "get",
+                success: function (result, status) {
+                    if (status != "error") {
+                        $("#positionMatrixEditGroupArea").html(result);
+                        $('#emptyPlaceholder').addClass('hidden');
+                    }
+                }
+            });
+        }
+
+        this.renameSkillGroup = function (id) {
+            var group = positionMatrixManager.findGroup(id);
+
+            if (group)
+                createGroup(group);
+        }
+
+        this.removeSkill  = function (id) {
+            var skill = positionMatrixManager.findSkill(id);
+            if(skill){
+                showConfirm('Confirm', 'You are about to delete skill: <br>' + skill.skillName + '.<br>Proceed?', function () {
+                    positionMatrixManager.removeSkill(id);
+                    $("#skillTreePositionMatrixSkillsEditor").fancytree("getActiveNode").remove();
+                });
+
+                checkSpanNoSkillsAddedStatus();
+            }
+        }
+
+        this.removeSkillGroup = function (id) {
+            var group = positionMatrixManager.findGroup(id);
+
+            if (group) {
+                showConfirm('Confirm', 'You are about to delete group: <br>' + group.name + '.<br>Proceed?', function () {
+                    positionMatrixManager.removeGroup(group.id);
+
+                    $("#skillTreePositionMatrixSkillsEditor").fancytree("getActiveNode").remove();
+                });
+            }
+
+            checkSpanNoSkillsAddedStatus();
+        }
+
+        function parseSkills(positionSkills) {
+            var children = [];
+            $.each(positionSkills.groups, function () {
+                children.push(parseSkillGroup(this));
+            });
+            $.each(positionSkills.skills, function () {
+                children.push(parseSkill(this));
+            });
+            return children;
+        }
+
+        function parseSkillGroup(group) {
+            var lazy = false;
+            var subGroups = group.childGroups;
+            var skills = group.skills;
+            return {
+                title: group.name,
+                id: group.id,
+                matrixName: htmlEncode(group.matrixName),
+                name: htmlEncode(group.name),
+                groupType: group.groupType.name,
+                expanded: group.parentGroupId == null,
+                folder: true,
+                lazy: lazy,
+                model: group,
+                children: ((subGroups !== undefined && subGroups != null && subGroups.length) ? parseSkillGroupsList(subGroups) : []).concat(((skills !== undefined && skills != null && skills.length) ? parseSkillsList(skills) : []))
+            }
+        }
+
+        function parseSkillGroupsList(groups) {
+            var children = [];
+            $.each(groups, function () {
+                children.push(parseSkillGroup(this));
+            });
+            return children;
+        }
+
+        function parseSkillsList(groups) {
+            var children = [];
+            $.each(groups, function () {
+                children.push(parseSkill(this));
+            });
+            return children;
+        }
+
+        function parseSkill(skill) {
+            return {
+                id: skill.id,
+                title: htmlEncode(skill.skillName),
+                folder: false,
+                model: skill,
+                isLeaf: true,
+                children: null
+            }
+        }
+
+        function parseDroppedNode(node) {
+            //if(node.data.model.skillId){
+            //    //node.data.id = node.data.model.skillId;
+            //    node.data.model.id = node.data.model.skillId;
+            //}
+            //else
+            node.data.id = node.data.model.id;
+            node.data.folder = false;
+            node.data.isLeaf = true;
+            return node;
+        }
+
+        function checkSpanNoSkillsAddedStatus()
+        {
+            if(positionMatrixManager.matrix.skills.length == 0)
+            { 
+                var anySkillsPresent = false;
+                positionMatrixManager.matrix.groups.forEach(function (item) 
+                {
+                    //state 2 indicates deleted group
+                    if(item.state != 2 && doesSkillGroupContainSkill(item))
+                    {
+                        anySkillsPresent = true;
+                    };
+                }
+                )
+                if(!anySkillsPresent)
+                {
+                    $("#spanNoSkillsAdded").show();
+                }
+            }
+        }
+
+        function doesSkillGroupContainSkill(group)
+        {
+            var result = false;
+            if(group.state == 2)
+            {
+                result = false;
+            }
+            else if(group.skills.length != 0)
+            {
+                result = true;
+            }
+            else if(group.childGroups.length != 0)
+            {
+                result = group.childGroups.forEach(doesSkillGroupContainSkill);
+            }
+            return result;
+        }
+
+        initPositionMatrixSkillsTree();
+        positionMatrixEditorIsTreeMode = true;
+        
+        $('#detailsView').append($('<div class="text-center droppable-root-area"><p><span id="spanNoSkillsAdded">No Skills added</span><br/>Use Drag and Drop to add skills</p></div>'));
+        if($("#skillTreePositionMatrixSkillsEditor").fancytree("getTree").count() != 0)
+        {
+            $("#spanNoSkillsAdded").hide();
+        }
+
+        //for dropping skill to root node
+        $(".droppable-root-area").droppable({
+            //accept: '.valid',
+            greedy: true,
+            revert: true,
+            hoverClass: 'droppable-area',
+            connectToFancytree: true,
+            drop: function (event, ui) {
+                var sourceNode = $(ui.helper).data("ftSourceNode");
+                onNodeDropped(null, sourceNode);
+            },
+            click: function (event) {
+                //prevent container and body from triggering click event
+                event.stopPropagation();
+            }
+        });
+    })();
+</script>

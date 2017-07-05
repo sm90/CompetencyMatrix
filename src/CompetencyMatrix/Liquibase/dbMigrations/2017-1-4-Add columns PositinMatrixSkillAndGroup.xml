@@ -1,0 +1,52 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+
+  <changeSet author="a.tsatsuyev (generated)" id="1483427773655-29" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <addColumn tableName="PositionMatrixSkill">
+      <column name="Hidden" type="bit" defaultValue="false">
+        <constraints nullable="false"/>        
+      </column>
+    </addColumn>
+
+    <addColumn tableName="PositionMatrixSkillGroup">
+      <column name="OverridenGroupId" type="int">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+
+  </changeSet>
+
+  <changeSet author="a.tsatsuyev (generated)" id="148342227773655-30" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <addColumn tableName="PositionMatrixSkillGroup">
+      <column name="MatrixId" type="int" defaultValue="1">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+
+    <addForeignKeyConstraint baseColumnNames="MatrixId" baseTableName="PositionMatrixSkillGroup" constraintName="FK_PositionMatrix_PositionMatrixSkillGroup" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="Id" referencedTableName="PositionMatrix"/>
+  </changeSet>
+
+  <changeSet author="a.tsatsuyev (generated)" id="148342722773655-32" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <addColumn tableName="PositionMatrixSkillGroup">
+      <column name="Hidden" type="bit" defaultValue="false">        
+      </column>
+    </addColumn>
+  </changeSet>
+
+
+  <changeSet author="a.tsatsuyev (generated)" id="148342277234273655-50" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <update  tableName="PositionMatrixSkillGroup">
+      <column name="Hidden" value="0"/>
+    </update>
+
+  </changeSet>
+
+
+</databaseChangeLog>

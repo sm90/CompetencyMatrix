@@ -1,0 +1,18 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+  <changeSet author="a.tsatsuyev" id="14834227723495-30" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+
+    <dropColumn tableName="Employee" schemaName="dbo" columnName="ProfileStatus"/>
+
+    <addColumn tableName="Employee">
+      <column name="ProfileStatus" type="int" defaultValue="3">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+
+  </changeSet>
+
+</databaseChangeLog>

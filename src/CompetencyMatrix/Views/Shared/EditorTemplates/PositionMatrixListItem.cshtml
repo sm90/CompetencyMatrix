@@ -1,0 +1,18 @@
+﻿@model CompetencyMatrix.ViewModels.PositionMatrixListItem
+
+<li href="#" class="list-group-item @IsSelected()">
+	<input type="hidden" asp-for="Id" class="idHidden"/>
+	<input type="hidden" asp-for="Name" class="nameHidden"/>
+	<input type="hidden" asp-for="Selected" class="selectedHidden" />
+	<label>@Html.DisplayFor(m => m.Name)</label>
+</li>
+
+@functions
+{
+
+	string IsSelected()
+	{
+		return Model.Selected ? "active" : "";
+	}
+
+}

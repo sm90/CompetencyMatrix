@@ -1,0 +1,31 @@
+﻿@model CompetencyMatrix.ViewModels.PositionMatrixSkillListItem
+
+@{
+    @if (!Model.Hidden)
+    {
+
+        <tr modelId="@Model.Id">
+            <td>
+                <div>
+                    <label>
+                        <input modelId="@Model.Id" id="skillCheckbox" onchange="recalcButtonAvailability()" type="checkbox">
+                    </label>
+                </div>
+            </td>
+            <td>@Model.SkillName</td>
+            <td>@Model.MatrixName</td>
+            <td>
+                @*@{
+                        if (Model.Leaf && Model.SkillGroupTypeId.HasValue)
+                        {
+                            <select asp-items="@ViewBag.SkillGroupTypes" modelId="@Model.Id" asp-for="@Model.SkillGroupTypeId" class="form-control" onchange="onSkillGroupChanged(this, SkillType.Skill)"></select>
+                        }
+                    }*@
+
+            </td>
+            <td>
+                <select asp-for="@Model.SkillLevelId" asp-items="@ViewBag.SkillLevels[Model.EvaluationModelId.Value]" class="form-control" modelId="@Model.Id" placeholder="Choose" onchange="onSkillLevelChanged(this, SkillType.Skill)"></select>
+            </td>
+        </tr>
+    }
+}

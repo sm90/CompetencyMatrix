@@ -1,0 +1,53 @@
+﻿<script src="@Url.Content("~/js/Employees/Employees.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/Employees/EmployeesTree.js")" asp-append-version="true"></script>
+
+<script>
+    $("#navBarEmployees").addClass("active");
+</script>
+@{ 
+    string office = Url.Action("GetEmployeesByOffice", "Employees");
+    string position = Url.Action("GetEmployeesByPosition", "Employees");
+}
+
+<div class="well">
+    <div class="row">
+        <div class="col-xs-12 ">
+            <div class="input-group">
+                <input id="employeeTree_txtSearch" class="form-control" placeholder="Search" title="Search employee tree" type="text">
+                <span class="input-group-btn">
+                    <button id="employeeTree_Search" class="btn btn-default" type="button" title="Search" onclick="filterEmployee()">
+                        <span class="glyphicon glyphicon-filter"></span>
+                    </button>
+                    <button id="employeeTree_Info" class="btn btn-default" type="button" title="Search" onclick="showEmployeeInfo()">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                    </button>
+                    <button id="employeestree_clearSearch" class="btn btn-default" type="button" title="Clear">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="well" style="display: none;">
+    <input type="hidden" value="@office" id="officeActionId"/>
+    <input type="hidden" value="@position" id="positionActionId" />
+    <div id="searchHints" style="height: 100%; margin-top: 0px;">
+        <blockquote>
+            <p style="display:none; text-align:left;">
+                To find all employees who are subordinates of the selected manager write manager=&#x40;&lt;manager name&gt;<br />
+                To find all employees of the specified office write: office=&#x40;&lt;name&gt;<br />
+                To find all employees of the specified position write: position=&#x40;&lt;position&gt;
+            </p>
+            </blockquote>
+
+</div>
+</div>
+
+
+<div class="well" data-url='@Url.Action("GetRoot", "Employees")' id="employeestreeContent">
+    <div>
+        @await Html.PartialAsync("EmployeesTree")
+    </div>
+</div>
+

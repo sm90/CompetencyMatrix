@@ -1,0 +1,310 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    overflow-y: hidden;
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set widths on the form inputs since otherwise they're 100% wide */
+/*
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+*/
+
+/* Carousel */
+.carousel-caption p {
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/* Make .svg files in the carousel display properly in older browsers */
+.carousel-inner .item img[src$=".svg"] {
+    width: 100%;
+}
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+    /* Hide captions */
+    .carousel-caption {
+        display: none;
+    }
+}
+
+.icon-skillcategory {
+    color: #5CB85C;
+}
+
+.icon-skill {
+    color: blue;
+}
+
+#skillLevelCriteriaTable > tbody > tr > td {
+    vertical-align: middle;
+}
+
+#skillLevelCriteriaTable > thead > tr > th {
+    background-color: lightsteelblue;
+    text-align: center;
+    border: none;
+}
+
+.skillLevelCriteriaTableMatrixCell {
+    text-align: center;
+}
+
+span.fancytree-title {
+    width: auto;
+    display: inline !important;
+}
+
+span.fancytree-icon {
+    display: inline !important;
+}
+
+/*.form-control {
+  padding-right: 30px;
+}
+
+.form-control + .glyphicon {
+  position: absolute;
+  left: 0;
+  padding: 2px 20px;
+}*/
+
+.well > #employeestree > thead > tr {
+    background-color: darkgray;
+}
+
+.divider {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    bottom: 10%;
+    background-color: black;
+    border-left: 1px solid white;
+}
+
+#idEmployeeHeader .label.label-info {
+    background-color: white !important;
+    color: darkgray !important;
+    font-size: small !important;
+}
+
+#idEmployeeHeader .label.label-data {
+    background-color: white !important;
+    color: black !important;
+    font-size: small !important;
+}
+
+#idEmployeeHeader .label.label-highlighted {
+    background-color: white !important;
+    color: blue !important;
+    font-size: small !important;
+}
+
+#headerContainerDetailSkillId .panel-heading{
+    padding-bottom:0;
+}
+
+.cursorover:hover {
+    cursor: pointer;
+}
+
+hr.vertical {
+    width: 0px;
+    height: 100%; /* or height in PX */
+}
+
+ul.fancytree-container {
+    height: 300px;
+    width: 100%;
+}
+
+.modal {
+    overflow: hidden;
+}
+
+.editable-employee {
+    display: block;
+    margin-bottom: 5px;
+}
+
+    .editable-employee span {
+        width: 170px;
+        display: inline-block;
+    }
+
+.popover-content {
+    margin: 10px !important;
+}
+
+.editable-input {
+    vertical-align: top;
+    display: inline-block;
+    width: auto;
+    white-space: normal;
+    zoom: 1;
+}
+
+.label-xs {
+    font-size: 130% !important;
+}
+
+#employeePastProjectTree .fancytree-active.fancytree-exp-n.fancytree-ico-c > td,
+#employeePastProjectTree .fancytree-lastsib.fancytree-exp-nl.fancytree-ico-c > td {
+    background-color: #f9f9f9 !important;
+    color: #333 !important;
+}
+
+.row.like-table-row {
+    display: table-row;
+}
+
+    .row.like-table-row > div {
+        display: table-cell;
+        float: none;
+    }
+
+        .row.like-table-row > div.middle-vertical-align {
+            vertical-align: middle;
+        }
+
+#positionMatrixInheritanceManagemenDialog div.matrix-list {
+    min-height: 450px;
+    max-height: 450px;
+    overflow-y: scroll;
+}
+
+/*dialog*/
+
+.header-row {
+    background-color: #E5E5E5;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+}
+
+    .header-row label {
+        margin: 0;
+    }
+
+/*end edialog*/
+
+.positionMatrixSkillGroupTable {
+    margin-bottom: 0px;
+}
+
+.positionMatrixSkillGroupTable > thead > tr > th {
+    background-color: lightsteelblue !important;
+    text-align: left;
+    border: none;
+}
+
+.positionMatrixSkillGroupTable > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9 !important;
+}
+
+.positionMatrixSkillGroupTable #childGroup {
+    padding-right: 0;
+}
+
+.positionMatrixSkillGroupTable #childGroup .panel-body {
+    padding-right: 5px;
+}
+
+/*EditMatrix*/
+.selectable .ui-selecting {
+    background: #5094ce;
+    /*color: white;*/
+}
+
+.selectable .ui-selected {
+    background-color: lightgray;
+    color: black;
+}
+
+.droppable-area {
+    border: solid 1px red;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) {
+  background-color: #FFF !important;
+}
+
+#matrixEditorContainer #detailsView {
+    overflow-y: auto;
+}
+
+#matrixEditorContainer #searchContainer {
+    margin-top: 27px;
+}
+
+/*end EditMatrix*/
+
+#matrixEditorContainer #detailsView .table > tbody > tr > td,
+#positionMatrixSkillsView .table > tbody > tr > td{
+    border: none;
+}
+
+.alert-warning {
+  color: #8a6d3b;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.list-group-item.active > a, .list-group-item.active:hover > a, .list-group-item.active:focus > a {
+    color: #fff;
+}
+
+/* Logs page*/
+
+div.logsPanel {
+    overflow-y:auto;
+    height: 78vh;
+}
+
+div.toolsPanel {
+    margin-bottom: 8px;
+    margin-top: 0;
+}
+
+table.logs {
+    font-size: 11px;
+    table-layout: fixed;
+    line-height: 13px
+}
+
+table.logs > thead > tr > th, table.logs > tbody > tr> td {
+  white-space:normal;
+  overflow :hidden;
+}
+
+table.logs > tbody > tr> td.nowrap {
+  white-space:nowrap;
+  overflow :hidden;
+}
+
+table.logs > tbody > tr> td:hover {
+  white-space:pre-line;
+  overflow :auto;
+}
+
+.pager li.active > a {
+  text-decoration: none;
+  background-color: #eef;
+}
+
+.pager, .pagination{
+    margin: 10px 0;
+}
+/* End Logs page*/
+

@@ -1,0 +1,1 @@
+dotnet ef dbcontext scaffold "Server=192.168.0.41;Database=CompetencyMatrix;Trusted_Connection=False;Password=Unreal1970;User ID=sa;" "Microsoft.EntityFrameworkCore.SqlServer" -c CompetencyMatrixContext -o Models -f

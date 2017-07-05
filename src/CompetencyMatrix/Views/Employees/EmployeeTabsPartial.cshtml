@@ -1,0 +1,70 @@
+﻿
+
+<ul class="nav nav-tabs nav-justified" role="tablist" style="margin-bottom: 10px">
+    <li role="presentation" class="active"><a href="#skills" aria-controls="home" role="tab" data-toggle="tab" id="skillsId">Skills</a></li>
+    <li role="presentation"><a href="#pastProject" aria-controls="profile" role="tab" data-toggle="tab" id="pastProjectId">Past Project</a></li>
+    <li role="presentation"><a href="#changeLog" aria-controls="messages" role="tab" data-toggle="tab" id="changeLogId">Change Log</a></li>
+    <li role="presentation"><a href="#trainingCertification" aria-controls="messages" role="tab" data-toggle="tab" id="trainingCertificationId">Training and Certification</a></li>
+</ul>
+
+<script type="text/javascript">
+    var activeTab = "skillsId";
+    $('#skillsId').tab('show');
+    $('#btnEditPastProject').addClass('disabled');
+    $('#btnEditPastProject').html('Add past project');
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        e.target // newly activated tab
+        e.relatedTarget // previous active tab
+        activeTab = $(e.target).attr('id');
+        if (activeTab == "pastProjectId") {
+            $('#btnEditPastProject').removeClass('disabled');
+            $('#btnEditPastProject').html('Add past project');
+        } else {
+            $('#btnEditPastProject').addClass('disabled');
+        }
+    })
+
+
+</script>
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="skills">
+        <div class="form-group">
+            <div class="well">
+                <div>
+                    @await Html.PartialAsync("EmployeeSkillTreePartial")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="pastProject">
+        <div class="form-group">
+            <div class="well">
+                <div>
+                    @await Html.PartialAsync("EmployeePastProjectTreePartial")
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="changeLog">
+        <div class="form-group">
+            <div class="well">
+                <div>
+                    @await Html.PartialAsync("EmployeeChangeLogTreePartial")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="trainingCertification">
+        <div class="well">
+            <div>
+                @await Html.PartialAsync("EmployeeTrainingSertificationsPartial")
+            </div>
+        </div>
+    </div>
+</div>
+
+

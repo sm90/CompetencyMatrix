@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="v.grebinnyk (generated)" id="1481557588746-1" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addColumn tableName="PositionMatrix">
+            <column defaultValueNumeric="0" name="IsPublic" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="PositionMatrix">
+            <column name="OwnerId" type="NVARCHAR(450)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="v.grebinnyk" id="1481557588746-2">
+    	<sql endDelimiter="\nGO" splitStatements="true" stripComments="true">
+		declare @UserId nvarchar(450)
+		select top 1 
+		@UserId = Id
+		from AspNetUsers
+		update PositionMatrix set OwnerId = @UserId
+    	</sql>
+    </changeSet>
+    <changeSet author="v.grebinnyk" id="1481557588746-3">
+	<addNotNullConstraint 
+            columnDataType="NVARCHAR(450)"
+            columnName="OwnerId"
+            tableName="PositionMatrix"/>
+    </changeSet>
+    <changeSet author="v.grebinnyk (generated)" id="1481557588746-4" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="OwnerId" baseTableName="PositionMatrix" constraintName="FK_PositionMatrix_AspNetUsers" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="Id" referencedTableName="AspNetUsers"/>
+    </changeSet>
+</databaseChangeLog>

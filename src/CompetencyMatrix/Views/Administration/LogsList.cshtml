@@ -1,0 +1,39 @@
+﻿@using System.Threading.Tasks
+@using PagedList.Core
+@using PagedList.Core.Mvc
+@model IPagedList<CompetencyMatrix.ViewModels.LogEntryViewModel>
+
+<div id="logsList">
+    <div class="logsPanel">
+        <table class="table table-striped table-bordered table-hover table-condensed logs">
+            <thead>
+            <tr>
+                <th style="width: 120px">Logged DateTime</th>
+                <th style="width: 60px">Level</th>
+                <th style="width: 60px">Event id</th>
+                <th style="width: 350px">Message</th>
+                <th style="width: 200px">Logger</th>
+                <th style="width: 300px">Environment</th>
+                <th style="width: auto">Exception</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var logItem in Model)
+            {
+                <tr class="@logItem.Level">
+                    <td>@logItem.Log.Logged</td>
+                    <td>@logItem.Log.Level</td>
+                    <td>@logItem.Log.EventId</td>
+                    <td>@logItem.Log.Message</td>
+                    <td>@logItem.Log.Logger</td>
+                    <td class="nowrap">@logItem.Log.Environment</td>
+                    <td class="nowrap">@logItem.Log.Exception</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagedList" data-cm-target="#logsList">
+        <pager class="pager-container" list="@Model" options="@PagedListRenderOptions.ClassicPlusFirstAndLast" asp-action="Logs" asp-controller="Administration"/>
+    </div>
+</div>
